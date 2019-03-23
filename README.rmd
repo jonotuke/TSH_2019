@@ -2,10 +2,28 @@
 title: "README"
 author: "Jono Tuke"
 date: "14/03/2019"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+20190318: 
+  + Copy Paper ID to all rows involving that paper.
+  + Copy Condition to all relevant rows. 
+  + Create a new column containing "Continuous", "Quartile" etc.
+  + Delete blank rows within a paper, currently left blank rows separating papers to make it easier to read
+  + Highlighted any obviously dubious cells/entries in Red, left yellow ones from Stephen for clarification
+  + Tidied up "minus" entries - Note that the Confidence Interval notation is not standardised! 
+  + Explicitly annotated "plus" with the prior categories
+  + Removed "adj" from conditions, where the covariates indicate a deeper analysis
+  + Inserted annotations, such as "- male", into the "Condition" description to uniquely identify each test. 
+  
+  
+  
+
 

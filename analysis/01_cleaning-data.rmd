@@ -1,0 +1,429 @@
+---
+title: "Cleaning of the data"
+author: "Jono Tuke"
+date: "21/03/2019"
+output: 
+  html_document:
+    theme: spacelab
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  fig.width = 6, 
+  fig.asp = 0.618, 
+  out.width = "70%",
+  fig.align = "center", 
+  root.dir = '../'
+)
+pacman::p_load(tidyverse, readxl, tidytext, refinr, lubridate, glue, stringr)
+```
+
+# Nigel's cleaning
+
+Nigel did some cleaning of the original dataset as follows
+
+## 18th March 2019
+
+- Copy Paper ID to all rows involving that paper.
+- Copy Condition to all relevant rows. 
+- Create a new column containing "Continuous", "Quartile" etc.
+- Delete blank rows within a paper, currently left blank rows separating papers to make it easier to read
+- Highlighted any obviously dubious cells/entries in Red, left yellow ones from Stephen for clarification
+- Tidied up "minus" entries - Note that the Confidence Interval notation is not standardised! 
+- Explicitly annotated "plus" with the prior categories
+- Removed "adj" from conditions, where the covariates indicate a deeper analysis
+- Inserted annotations, such as "- male", into the "Condition" description to uniquely identify each test. 
+
+# Read in the data
+
+```{r}
+TSH  <- read_excel("../data/20190318_excel tsh_2019_data.xlsx")
+TSH
+```
+
+# Cleaning of the data
+
+## Missing rows
+
+Nigel has mentioned that left blank rows between the papers, we will remove these
+
+```{r}
+TSH  <- 
+  TSH %>% 
+  filter(!is.na(Paper))
+TSH
+```
+
+So drop from 509 rows to 460. 
+
+## Paper
+
+```{r, fig.asp = 1.5}
+TSH %>% 
+  count(Paper) %>% 
+  ggplot(aes(fct_reorder(Paper, n), n)) + 
+  geom_bar(stat = "identity") + 
+  coord_flip() + 
+  labs(x = NULL, y = "Number of results")
+```
+
+**TODO** Not sure about Chaker and Chaker *
+
+## Continuous versus quantile
+
+First rename to make easier
+
+```{r}
+TSH  <- 
+  TSH %>% 
+  rename(CvQ = `Continuous V quantile`)
+```
+
+```{r}
+TSH %>% 
+  count(CvQ)
+```
+
+I assume that `quartile analysis` and `Quartile analysis` are the same so collapse, similar process for others. 
+
+```{r}
+TSH  <- 
+  TSH %>% mutate(
+  CvQ = fct_recode(
+    CvQ,
+    `Quartile analysis` = "quartile analysis", 
+    Quartiles = "quartiles",
+    Tertiles = "tertiles"
+  )
+)
+```
+
+```{r}
+TSH %>% 
+  count(CvQ) %>% 
+  print(n = 20)
+```
+
+## Condition
+
+```{r}
+TSH %>% 
+  count(Condition)
+```
+
+Lots of mis-spelling etc. Will use the methods of key collision and ngram fingerprints to correct. This is done by the `refinr` package
+
+<https://cran.r-project.org/web/packages/refinr/vignettes/refinr-vignette.html>. 
+
+These methods come from openrefine - see also
+
+<https://github.com/OpenRefine/OpenRefine/wiki/Clustering-In-Depth>
+
+```{r}
+clean_levels  <- function(x, check = FALSE){
+  # Convert to character
+  x  <- as.character(x)
+  # Apply key collision and ngram merge
+  x_refin <- x %>% 
+    key_collision_merge() %>% 
+    n_gram_merge()
+  if(check){
+    tab  <- 
+    tibble(
+      x, x_refin
+    ) %>% 
+      filter(
+        x != x_refin
+      ) %>% 
+      knitr::kable()
+    return(tab)
+  }
+  return(x_refin)
+}
+clean_levels(TSH$Condition, check = TRUE)
+```
+
+So looks reasonable so change
+
+```{r}
+TSH  <- 
+  TSH %>% mutate(
+  condition = clean_levels(Condition)
+)
+```
+
+
+## FT4_N
+
+```{r}
+table(TSH$FT4_N)
+```
+
+So some seem to have cases and controls. I will use the total as N, also not stated I will see to NA. Finally approx will be set to the value. 
+
+```{r}
+clean_n  <- function(x, check = FALSE){
+  origin_x  <- x
+  # Get rid of not stated
+  x[str_detect(x,"not stated")]  <- NA
+  # Get rid of approx
+  x  <- str_replace(x, " approx", "")
+  # Get rid of cases and controls
+  x  <- str_replace(x, "cases", "")
+  x  <- str_replace(x, "controls", "")
+  # Grab enteries of type case/control and add
+  case_control  <- str_match(x, "(\\d+)/(\\d+)")
+  total  <- as.numeric(case_control[, 2]) + as.numeric(case_control[, 3])
+  index  <- which(!is.na(total))
+  x[index]  <- total[index]
+  x  <- as.numeric(x)
+  # Compare
+  if(check){
+    tab  <- 
+    tibble(
+      origin_x, x
+    )  %>% 
+      filter(origin_x != x) %>% 
+      knitr::kable() 
+    return(tab)
+  }
+  return(x)
+}
+clean_n(TSH$FT4_N, check = TRUE)
+```
+
+```{r}
+TSH  <- 
+  TSH %>%
+  mutate(
+  FT4_N = clean_n(FT4_N)
+  )
+```
+
+```{r}
+summary(TSH$FT4_N)
+```
+
+
+## FT4 method
+
+```{r}
+TSH %>% 
+  count(FT4_method)
+```
+
+```{r}
+clean_levels(TSH$FT4_method, check = TRUE)
+```
+
+```{r}
+TSH  <- 
+  TSH %>% 
+  mutate(
+    FT4_method = clean_levels(FT4_method)
+  )
+```
+
+
+## FT4 sig
+
+```{r}
+TSH %>% count(FT4_Sig)
+```
+
+Not sure what N* is. 
+
+## FT4 PV
+
+```{r}
+clean_pv  <- function(x, check = FALSE){
+  origin_x  <- x
+  # Get rid of not stated
+  x[str_detect(x,"not stated")]  <- NA
+  # Get rid of <
+  x  <- str_replace(x, "<", "")
+  x  <- as.numeric(x)
+  # Compare
+  if(check){
+    cat("PVs removed\n\n")
+    print(origin_x[is.na(x)])
+    tab  <- 
+    tibble(
+      origin_x, x
+    )  %>% 
+      filter(origin_x != x) %>% 
+      knitr::kable() 
+    return(tab)
+  }
+  return(x)
+}
+clean_pv(TSH$FT4_PV, check = TRUE)
+TSH  <- 
+  TSH %>% 
+  mutate(FT4_PV = clean_pv(FT4_PV))
+```
+
+Have removed CI, and converted $< p $ to p. 
+
+```{r}
+TSH %>% 
+  ggplot(aes(FT4_PV)) + geom_histogram(col = "black", fill = "orange")
+```
+
+
+## FT4_cov
+
+```{r}
+clean_levels(TSH$FT4_cov, check = TRUE)
+```
+
+```{r}
+TSH  <- 
+  TSH %>% 
+  mutate(
+    FT4_cov = clean_levels(FT4_cov)
+  )
+```
+
+
+## TSH_N
+
+```{r}
+clean_n(TSH$TSH_N, check = TRUE)
+TSH  <- TSH %>% 
+  mutate(TSH_N = clean_n(TSH_N))
+```
+
+## TSH_method
+
+
+```{r}
+clean_levels(TSH$TSH_method, check = TRUE)
+TSH  <- 
+  TSH %>% 
+  mutate(TSH_method = clean_levels(TSH_method))
+```
+
+## TSH_sig
+
+```{r}
+TSH %>% 
+  count(TSH_Sig)
+```
+
+## TSH PV
+
+```{r}
+clean_pv(TSH$TSH_PV, check = TRUE)
+```
+
+## TSH cov
+
+```{r}
+clean_levels(TSH$TSH_cov, check = TRUE)
+TSH  <- 
+  TSH %>% 
+  mutate(
+    TSH_cov = clean_levels(TSH_cov)
+  )
+```
+
+
+## T3 N
+
+```{r}
+clean_n(TSH$T3_N, check = TRUE)
+TSH  <- 
+  TSH %>% 
+  mutate(
+    T3_N = clean_n(T3_N)
+  )
+```
+
+## T3 method
+
+```{r}
+clean_levels(TSH$T3_method, check = TRUE)
+TSH  <- 
+  TSH %>% 
+  mutate(
+    T3_method = clean_levels(T3_method)
+  )
+```
+
+## T3 sig
+
+```{r}
+TSH %>% 
+  count(T3_Sig)
+```
+
+Convert not stated to NA
+
+```{r}
+TSH$T3_Sig[TSH$T3_Sig == "not stated"]  <- NA
+```
+
+```{r}
+TSH %>% 
+  count(T3_Sig)
+```
+
+
+## T3 PV
+
+```{r}
+clean_pv(TSH$T3_PV, check = TRUE)
+TSH  <- 
+  TSH %>% 
+  mutate(
+    T3_PV = clean_pv(T3_PV)
+  )
+```
+
+
+## T3 cov
+
+```{r}
+clean_levels(TSH$T3_cov, check = TRUE)
+TSH  <- 
+  TSH %>% 
+  mutate(
+    T3_cov = clean_levels(T3_cov)
+  )
+```
+
+
+## Notes
+
+The final column seems to be a comments section, will rename as such. 
+
+```{r}
+TSH  <- 
+  TSH %>% 
+  rename(
+    comments = ...19
+  )
+```
+
+# Save clean data
+
+```{r}
+get_label  <- function(ext = "rds"){
+  # Add date
+  date  <- str_c(
+    year(today()),
+    str_pad(month(today()), width = 2, side = "left", pad = "0"),
+    day(today())
+  )
+  # Get contain file
+  filename  <- knitr:::knit_concord$get("infile")
+  filename  <- str_replace(filename, "\\.rmd","")
+  return(glue("{date}-{filename}.{ext}"))
+}
+
+write_rds(TSH, glue("../data/{get_label()}"))
+```
+
