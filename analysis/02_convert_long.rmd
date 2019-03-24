@@ -1,0 +1,67 @@
+---
+title: "Convert to long form"
+author: "Jono Tuke"
+date: "23/03/2019"
+output: 
+  html_document:
+    theme: spacelab
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  fig.width = 6, 
+  fig.asp = 0.618, 
+  out.width = "70%",
+  fig.align = "center", 
+  root.dir = '../'
+)
+pacman::p_load(
+  tidyverse, lubridate, stringr, glue
+)
+source("../code/get_label.R")
+```
+
+# Read in clean data
+
+```{r}
+TSH  <- read_rds("../data/20190324-01_cleaning-data.rds")
+TSH
+```
+
+# Add ID
+
+```{r}
+TSH$ID  <- seq_along(TSH$Paper)
+```
+
+# Convert to long form
+
+First take the the significance so row for each significance result. The key measure is made up of two parts - thanks NB for listening - this means that we can split into measure and T4 form
+
+```{r}
+TSH
+spec  <- TSH %>% 
+  pivot_longer_spec(
+    FT4_N:T3_cov, 
+    names_to = c("Thyroid_test", ".value"),
+    names_sep = "_" )
+spec
+TSH_long  <- 
+  TSH %>% 
+  pivot_longer(spec = spec)
+TSH_long
+```
+
+
+
+
+
+
+# Write data
+
+```{r}
+write_rds(TSH_long, glue("../data/{get_label()}"))
+```
+

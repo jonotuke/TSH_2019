@@ -1,0 +1,73 @@
+---
+title: "Prelim visuals"
+author: "Jono Tuke"
+date: "23/03/2019"
+output: 
+  html_document:
+    theme: spacelab
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  fig.width = 6, 
+  fig.asp = 0.618, 
+  out.width = "70%",
+  fig.align = "center", 
+  root.dir = '../'
+)
+pacman::p_load(
+  tidyverse, lubridate, stringr, glue, lme4, lmerTest
+)
+source("../code/get_label.R")
+```
+
+# Read in clean data
+
+```{r}
+TSH_long  <- read_rds("../data/20190324-02_convert_long.rds")
+TSH_long
+```
+
+
+**Need to manual check on larger computer with a change**
+
+
+# Overall
+
+```{r}
+TSH_long %>% 
+  count(Thyroid_test, Sig) %>% 
+  filter(Sig %in% c("N","Y")) %>% 
+  group_by(Thyroid_test) %>% 
+  mutate(
+    N = sum(n), 
+    p = n / N, 
+    lwr = p - 1.96 * sqrt(p * (1-p) / N),
+    upr = p + 1.96 * sqrt(p * (1-p) / N)
+    ) %>% 
+  filter(Sig == "Y") %>% 
+  ggplot(aes(Thyroid_test, p)) + geom_point() + 
+  geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0.1)
+```
+
+
+```{r}
+pd <- position_dodge(width = 0.4)
+TSH_long %>% 
+  count(system, Thyroid_test, Sig) %>% 
+  filter(Sig %in% c("N", "Y")) %>% 
+  group_by(system, Thyroid_test) %>% 
+  mutate(
+    N = sum(n), 
+    p = n / N, 
+    lwr = p - 1.96 * sqrt(p * (1-p) / N),
+    upr = p + 1.96 * sqrt(p * (1-p) / N)
+  ) %>% 
+  filter(Sig == "Y") %>% 
+  ggplot(aes(system, p, col = Thyroid_test)) + 
+  geom_point(position = pd) + 
+  geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0.1, position = pd)
+```
+

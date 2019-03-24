@@ -17,7 +17,11 @@ knitr::opts_chunk$set(
   fig.align = "center", 
   root.dir = '../'
 )
-pacman::p_load(tidyverse, readxl, tidytext, refinr, lubridate, glue, stringr)
+pacman::p_load(tidyverse, readxl, 
+               tidytext, refinr, 
+               lubridate, glue, 
+               stringr, knitr)
+source("../code/get_label.R")
 ```
 
 # Nigel's cleaning
@@ -57,6 +61,12 @@ TSH
 ```
 
 So drop from 509 rows to 460. 
+
+## Add an ID
+
+```{r}
+TSH$ID  <- seq_along(TSH$Paper)
+```
 
 ## Paper
 
@@ -150,8 +160,57 @@ So looks reasonable so change
 ```{r}
 TSH  <- 
   TSH %>% mutate(
-  condition = clean_levels(Condition)
+  Condition = clean_levels(Condition)
 )
+```
+
+**NEED A MAPPER**
+
+## Condition mapper
+
+First we read in the mapper:
+
+```{r}
+condition_mapper  <- read_excel("../data/20190324_condition_mapper.xlsx")
+condition_mapper %>% kable()
+```
+
+Function to convert condition to system
+
+```{r, fig.asp=5}
+cond_to_system  <- function(x, mapper){
+  x  <- str_to_lower(x)
+  mapper$condition  <- str_to_lower(mapper$condition)
+  systems  <- unique(mapper$system)
+  n_systems  <- length(systems)
+  N  <- length(x)
+  M  <- matrix(rep(0, n_systems * N), nc = n_systems, nr = N)
+  colnames(M)  <- systems
+  for(i in 1:n_systems){
+    conditions  <- 
+      mapper %>% filter(system == systems[i]) %>% 
+      pull(condition)
+    for(j in conditions){
+      M[,i]  <- M[,i] + str_detect(x, j)
+    }    
+  }
+  M  <- pmin(M, 1)
+  get_system  <- function(row){
+    if(sum(row) == 0){
+      return("other")
+    } else if(sum(row) == 1){
+      return(names(row[row == 1]))
+    } else {
+      return("mixed")
+    }
+  }
+  return(apply(M, 1, get_system))
+}
+
+TSH$system  <- cond_to_system(TSH$Condition, condition_mapper)
+TSH %>% 
+  filter(system == "other") %>% 
+  pull(Condition)
 ```
 
 
@@ -317,8 +376,17 @@ TSH %>%
 
 ```{r}
 clean_pv(TSH$TSH_PV, check = TRUE)
+TSH  <- 
+  TSH %>% 
+  mutate(
+    TSH_PV = clean_pv(TSH_PV)
+  )
 ```
 
+```{r}
+TSH %>% 
+  ggplot(aes(TSH_PV)) + geom_histogram(col = "black", fill = "orange")
+```
 ## TSH cov
 
 ```{r}
@@ -383,6 +451,10 @@ TSH  <-
   )
 ```
 
+```{r}
+TSH %>% 
+  ggplot(aes(T3_PV)) + geom_histogram(col = "black", fill = "orange")
+```
 
 ## T3 cov
 
@@ -411,19 +483,6 @@ TSH  <-
 # Save clean data
 
 ```{r}
-get_label  <- function(ext = "rds"){
-  # Add date
-  date  <- str_c(
-    year(today()),
-    str_pad(month(today()), width = 2, side = "left", pad = "0"),
-    day(today())
-  )
-  # Get contain file
-  filename  <- knitr:::knit_concord$get("infile")
-  filename  <- str_replace(filename, "\\.rmd","")
-  return(glue("{date}-{filename}.{ext}"))
-}
-
 write_rds(TSH, glue("../data/{get_label()}"))
 ```
 
