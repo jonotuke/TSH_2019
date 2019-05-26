@@ -481,20 +481,20 @@ spec</code></pre>
   pivot_longer(spec = spec)
 TSH_long</code></pre>
 <pre><code>## # A tibble: 1,380 x 12
-##    Paper CvQ   Condition comments    ID system Thyroid_test cov   method
-##    &lt;chr&gt; &lt;fct&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt; 
-##  1 Capp… Cont… AF        &lt;NA&gt;         1 cardi… FT4          Age,… Cox PH
-##  2 Capp… Cont… AF        &lt;NA&gt;         1 cardi… TSH          Age,… Cox PH
-##  3 Capp… Cont… AF        &lt;NA&gt;         1 cardi… T3           Age,… Cox PH
-##  4 Capp… Cont… AF        &lt;NA&gt;         2 cardi… FT4          Age,… Cox PH
-##  5 Capp… Cont… AF        &lt;NA&gt;         2 cardi… TSH          Age,… Cox PH
-##  6 Capp… Cont… AF        &lt;NA&gt;         2 cardi… T3           Age,… Cox PH
-##  7 Capp… Cont… CHD       &lt;NA&gt;         3 cardi… FT4          Age,… Cox PH
-##  8 Capp… Cont… CHD       &lt;NA&gt;         3 cardi… TSH          Age,… Cox PH
-##  9 Capp… Cont… CHD       &lt;NA&gt;         3 cardi… T3           Age,… Cox PH
-## 10 Capp… Cont… CHD       &lt;NA&gt;         4 cardi… FT4          Age,… Cox PH
-## # … with 1,370 more rows, and 3 more variables: N &lt;dbl&gt;, PV &lt;dbl&gt;,
-## #   Sig &lt;chr&gt;</code></pre>
+##    Paper CvQ   Condition comments    ID system Thyroid_test     N method
+##    &lt;chr&gt; &lt;fct&gt; &lt;chr&gt;     &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt; 
+##  1 Capp… Cont… AF        &lt;NA&gt;         1 cardi… FT4           2673 Cox PH
+##  2 Capp… Cont… AF        &lt;NA&gt;         1 cardi… TSH           2673 Cox PH
+##  3 Capp… Cont… AF        &lt;NA&gt;         1 cardi… T3            2673 Cox PH
+##  4 Capp… Cont… AF        &lt;NA&gt;         2 cardi… FT4           2673 Cox PH
+##  5 Capp… Cont… AF        &lt;NA&gt;         2 cardi… TSH           2673 Cox PH
+##  6 Capp… Cont… AF        &lt;NA&gt;         2 cardi… T3            2673 Cox PH
+##  7 Capp… Cont… CHD       &lt;NA&gt;         3 cardi… FT4           2215 Cox PH
+##  8 Capp… Cont… CHD       &lt;NA&gt;         3 cardi… TSH           2215 Cox PH
+##  9 Capp… Cont… CHD       &lt;NA&gt;         3 cardi… T3            2215 Cox PH
+## 10 Capp… Cont… CHD       &lt;NA&gt;         4 cardi… FT4           2215 Cox PH
+## # … with 1,370 more rows, and 3 more variables: Sig &lt;chr&gt;, PV &lt;dbl&gt;,
+## #   cov &lt;chr&gt;</code></pre>
 </div>
 <div id="write-data" class="section level1">
 <h1><span class="header-section-number">4</span> Write data</h1>

@@ -387,6 +387,7 @@ TSH  <-
 TSH %>% 
   ggplot(aes(TSH_PV)) + geom_histogram(col = "black", fill = "orange")
 ```
+
 ## TSH cov
 
 ```{r}

@@ -12,18 +12,51 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-20190318: 
-  + Copy Paper ID to all rows involving that paper.
-  + Copy Condition to all relevant rows. 
-  + Create a new column containing "Continuous", "Quartile" etc.
-  + Delete blank rows within a paper, currently left blank rows separating papers to make it easier to read
-  + Highlighted any obviously dubious cells/entries in Red, left yellow ones from Stephen for clarification
-  + Tidied up "minus" entries - Note that the Confidence Interval notation is not standardised! 
-  + Explicitly annotated "plus" with the prior categories
-  + Removed "adj" from conditions, where the covariates indicate a deeper analysis
-  + Inserted annotations, such as "- male", into the "Condition" description to uniquely identify each test. 
+# 18th March 2019
   
-  
+- Copy Paper ID to all rows involving that paper.
+- Copy Condition to all relevant rows. 
+- Create a new column containing "Continuous", "Quartile" etc.
+- Delete blank rows within a paper, currently left blank rows separating papers to make it easier to read
+- Highlighted any obviously dubious cells/entries in Red, left yellow ones from Stephen for clarification
+- Tidied up "minus" entries - Note that the Confidence Interval notation is not standardised! 
+- Explicitly annotated "plus" with the prior categories
+- Removed "adj" from conditions, where the covariates indicate a deeper analysis
+- Inserted annotations, such as "- male", into the "Condition" description to uniquely identify each test. 
   
 
+# Thursday 16 May 2019
 
+Meeting NB and JT. 
+
+- Check that mapper uses regex
+- pv -> three columns - pv, ci, counts, boolean for less than
+
+# Monday 20 May 2019
+
+Email from Nigel
+
+> Hi Jono,
+>
+> I hope you are enjoying EuroVision, because I am sure you didn’t enjoy the election coverage last night!
+>
+> I have uploaded a new version of the data with a new column under T3 indicating whether it used Free T3 or Total T3 - the former being more valid as Total T3 is contaminated (I think by T4, but you probably know). By adding this colunm, we can check if Free T3 is also a good proxy (like T4) or if it only works as well because of the  Total T3 investigations.
+>
+> I also forgot to mention that Stephen doesn’t want any “endocrine” system, but instead for BP, insulin and diabetes to be listed under metabolism. There should be no Thyroid in the condition list, and so we reworded a number of the conditions.
+>
+> Just to record it: we should treat all Y* and N* as Y and N, respectively. They have been inferred, but highly reliably.
+>
+> Finally, there is one "Cox PH*” because Stephen wasn’t completely sure whether it was Cox PH. When we looked at it, I discovered it was really a test for “trend” across 3 tertiles. I doubt that is Cox PH, but they didn’t say anything in their methods that was relevant. What method would you use? There are few of these “trend” analyses, so there might some further changes in this column, but for now that is not important.
+>
+> All the best,
+>
+> Nigel.
+
+
+# Monday 27 May 2019
+
+1. Clean up folder structure: 
+    1. added dates to file names
+    2. move info about changes and conversations to `correspondence` folder. 
+2. [] Work through NB's cleaning notes and adjust accordingly. 
+3. [] Work through NB's email of 20 May and adjust accordingly. 

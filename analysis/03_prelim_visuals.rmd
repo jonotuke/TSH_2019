@@ -68,6 +68,7 @@ TSH_long %>%
   filter(Sig == "Y") %>% 
   ggplot(aes(system, p, col = Thyroid_test)) + 
   geom_point(position = pd) + 
-  geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0.1, position = pd)
+  geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0.1, position = pd) + 
+  theme(axis.text.x = element_text(angle = -90, hjust=0))
 ```
 
