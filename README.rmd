@@ -58,5 +58,9 @@ Email from Nigel
 1. Clean up folder structure: 
     1. added dates to file names
     2. move info about changes and conversations to `correspondence` folder. 
-2. [] Work through NB's cleaning notes and adjust accordingly. 
-3. [] Work through NB's email of 20 May and adjust accordingly. 
+2. [x] Work through NB's cleaning notes and adjust accordingly. 
+3. [x] Work through NB's email of 20 May and adjust accordingly. 
+
+# Thursday 30 May 2019
+
+1. Finished adding new clean pv function and cleaned the rest of the data. 

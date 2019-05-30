@@ -20,8 +20,12 @@ knitr::opts_chunk$set(
 pacman::p_load(tidyverse, readxl, 
                tidytext, refinr, 
                lubridate, glue, 
-               stringr, knitr)
+               stringr, knitr, testthat)
 source("../code/get_label.R")
+source("../code/clean_levels.R")
+source("../code/clean_n.R")
+source("../code/get_inferred.R")
+source("../code/clean_pv.R")
 ```
 
 # Nigel's cleaning
@@ -43,7 +47,8 @@ Nigel did some cleaning of the original dataset as follows
 # Read in the data
 
 ```{r}
-TSH  <- read_excel("../data/20190318_excel tsh_2019_data.xlsx")
+# TSH  <- read_excel("../data/20190318_excel tsh_2019_data.xlsx")
+TSH  <- read_excel("../raw data/20190519_excel tsh_2019_data.xlsx")
 TSH
 ```
 
@@ -79,7 +84,9 @@ TSH %>%
   labs(x = NULL, y = "Number of results")
 ```
 
-**TODO** Not sure about Chaker and Chaker *
+Not sure about Chaker and Chaker *
+
+Turns out that Chaker * was Chaker _et al._. All fixed by NB. 
 
 ## Continuous versus quantile
 
@@ -96,18 +103,18 @@ TSH %>%
   count(CvQ)
 ```
 
-I assume that `quartile analysis` and `Quartile analysis` are the same so collapse, similar process for others. 
+I assume that `quartile analysis` and `Quartile analysis` are the same so collapse, similar process for others. This has been fixed by NB in raw data file. 
 
 ```{r}
-TSH  <- 
-  TSH %>% mutate(
-  CvQ = fct_recode(
-    CvQ,
-    `Quartile analysis` = "quartile analysis", 
-    Quartiles = "quartiles",
-    Tertiles = "tertiles"
-  )
-)
+# TSH  <- 
+#   TSH %>% mutate(
+#   CvQ = fct_recode(
+#     CvQ,
+#     `Quartile analysis` = "quartile analysis", 
+#     Quartiles = "quartiles",
+#     Tertiles = "tertiles"
+#   )
+# )
 ```
 
 ```{r}
@@ -117,6 +124,14 @@ TSH %>%
 ```
 
 ## Condition
+
+Column condition has had name change - change back
+
+```{r}
+TSH  <- 
+  TSH %>% 
+  rename(Condition = `Condition and restrictions on cohorts`)
+```
 
 ```{r}
 TSH %>% 
@@ -131,40 +146,30 @@ These methods come from openrefine - see also
 
 <https://github.com/OpenRefine/OpenRefine/wiki/Clustering-In-Depth>
 
+
+```{r code=readLines("../code/clean_levels.R"), eval = FALSE}
+```
+
 ```{r}
-clean_levels  <- function(x, check = FALSE){
-  # Convert to character
-  x  <- as.character(x)
-  # Apply key collision and ngram merge
-  x_refin <- x %>% 
-    key_collision_merge() %>% 
-    n_gram_merge()
-  if(check){
-    tab  <- 
-    tibble(
-      x, x_refin
-    ) %>% 
-      filter(
-        x != x_refin
-      ) %>% 
-      knitr::kable()
-    return(tab)
-  }
-  return(x_refin)
-}
 clean_levels(TSH$Condition, check = TRUE)
+blacklist  <- c("Breast cancer BMI>25", 
+                "Breast cancer BMI >25", 
+                "fatty liver-men U/s+ ALT+", 
+                "Fatty liver women U/s+ ALT+"
+                )
+clean_levels(TSH$Condition, check = TRUE, blacklist = blacklist)
 ```
 
 So looks reasonable so change
 
+Some not to be changed, 
+
 ```{r}
 TSH  <- 
   TSH %>% mutate(
-  Condition = clean_levels(Condition)
+  Condition = clean_levels(Condition, blacklist = blacklist)
 )
 ```
-
-**NEED A MAPPER**
 
 ## Condition mapper
 
@@ -214,6 +219,8 @@ TSH %>%
 ```
 
 
+I have changed BP, insulin, and diabetes to metabolic. 
+
 ## FT4_N
 
 ```{r}
@@ -222,34 +229,10 @@ table(TSH$FT4_N)
 
 So some seem to have cases and controls. I will use the total as N, also not stated I will see to NA. Finally approx will be set to the value. 
 
+```{r code=readLines("../code/clean_n.R"), eval = FALSE}
+```
+
 ```{r}
-clean_n  <- function(x, check = FALSE){
-  origin_x  <- x
-  # Get rid of not stated
-  x[str_detect(x,"not stated")]  <- NA
-  # Get rid of approx
-  x  <- str_replace(x, " approx", "")
-  # Get rid of cases and controls
-  x  <- str_replace(x, "cases", "")
-  x  <- str_replace(x, "controls", "")
-  # Grab enteries of type case/control and add
-  case_control  <- str_match(x, "(\\d+)/(\\d+)")
-  total  <- as.numeric(case_control[, 2]) + as.numeric(case_control[, 3])
-  index  <- which(!is.na(total))
-  x[index]  <- total[index]
-  x  <- as.numeric(x)
-  # Compare
-  if(check){
-    tab  <- 
-    tibble(
-      origin_x, x
-    )  %>% 
-      filter(origin_x != x) %>% 
-      knitr::kable() 
-    return(tab)
-  }
-  return(x)
-}
 clean_n(TSH$FT4_N, check = TRUE)
 ```
 
@@ -292,43 +275,50 @@ TSH  <-
 TSH %>% count(FT4_Sig)
 ```
 
-Not sure what N* is. 
+Not sure what N* is. NB has found that N* are inferred, but fine. Will convert and add inferred column
+
+```{r code=readLines("../code/get_inferred.R"), eval = FALSE}
+```
+
+```{r}
+TSH  <- 
+  TSH %>% 
+  mutate(FT4_inferred = get_inferred(FT4_Sig))
+table(TSH$FT4_Sig, TSH$FT4_inferred)
+TSH  <- 
+  TSH %>% 
+  mutate(FT4_Sig = str_replace_all(FT4_Sig, "\\*", ""))
+table(TSH$FT4_Sig, TSH$FT4_inferred)
+```
+
 
 ## FT4 PV
 
+Function to take PV column and convert to PV, OR CI, and count CI. 
+
+```{r code=readLines("../code/clean_pv.R"), eval = FALSE}
+```
+
 ```{r}
-clean_pv  <- function(x, check = FALSE){
-  origin_x  <- x
-  # Get rid of not stated
-  x[str_detect(x,"not stated")]  <- NA
-  # Get rid of <
-  x  <- str_replace(x, "<", "")
-  x  <- as.numeric(x)
-  # Compare
-  if(check){
-    cat("PVs removed\n\n")
-    print(origin_x[is.na(x)])
-    tab  <- 
-    tibble(
-      origin_x, x
-    )  %>% 
-      filter(origin_x != x) %>% 
-      knitr::kable() 
-    return(tab)
-  }
-  return(x)
-}
 clean_pv(TSH$FT4_PV, check = TRUE)
+```
+
+Nigel - you need to check and edit these. 
+
+```{r}
+pv  <- clean_pv(TSH$FT4_PV)
+pv  <- pv %>% select(-origin_x)
+pv
 TSH  <- 
   TSH %>% 
-  mutate(FT4_PV = clean_pv(FT4_PV))
+  bind_cols(pv)
 ```
 
 Have removed CI, and converted $< p $ to p. 
 
 ```{r}
 TSH %>% 
-  ggplot(aes(FT4_PV)) + geom_histogram(col = "black", fill = "orange")
+  ggplot(aes(FT4_pv)) + geom_histogram(col = "black", fill = "orange")
 ```
 
 
@@ -372,20 +362,39 @@ TSH %>%
   count(TSH_Sig)
 ```
 
+```{r}
+TSH  <- 
+  TSH %>% 
+  mutate(TSH_inferred = get_inferred(TSH_Sig))
+table(TSH$TSH_Sig, TSH$TSH_inferred)
+TSH  <- 
+  TSH %>% 
+  mutate(TSH_Sig = str_replace_all(TSH_Sig, "\\*", ""))
+table(TSH$TSH_Sig, TSH$TSH_inferred)
+```
+
+
 ## TSH PV
 
 ```{r}
 clean_pv(TSH$TSH_PV, check = TRUE)
+```
+
+**NB**: Please correct
+
+
+```{r}
+pv  <- clean_pv(TSH$TSH_PV)
+pv  <- pv %>% select(-origin_x)
+pv
 TSH  <- 
   TSH %>% 
-  mutate(
-    TSH_PV = clean_pv(TSH_PV)
-  )
+  bind_cols(pv)
 ```
 
 ```{r}
 TSH %>% 
-  ggplot(aes(TSH_PV)) + geom_histogram(col = "black", fill = "orange")
+  ggplot(aes(TSH_pv)) + geom_histogram(col = "black", fill = "orange")
 ```
 
 ## TSH cov
@@ -440,21 +449,36 @@ TSH %>%
   count(T3_Sig)
 ```
 
+```{r}
+TSH  <- 
+  TSH %>% 
+  mutate(T3_inferred = get_inferred(T3_Sig))
+table(TSH$T3_Sig, TSH$T3_inferred)
+TSH  <- 
+  TSH %>% 
+  mutate(T3_Sig = str_replace_all(T3_Sig, "\\*", ""))
+table(TSH$T3_Sig, TSH$T3_inferred)
+```
+
 
 ## T3 PV
 
 ```{r}
 clean_pv(TSH$T3_PV, check = TRUE)
+```
+
+```{r}
+pv  <- clean_pv(TSH$T3_PV)
+pv  <- pv %>% select(-origin_x)
+pv
 TSH  <- 
   TSH %>% 
-  mutate(
-    T3_PV = clean_pv(T3_PV)
-  )
+  bind_cols(pv)
 ```
 
 ```{r}
 TSH %>% 
-  ggplot(aes(T3_PV)) + geom_histogram(col = "black", fill = "orange")
+  ggplot(aes(T3_pv)) + geom_histogram(col = "black", fill = "orange")
 ```
 
 ## T3 cov
@@ -468,18 +492,12 @@ TSH  <-
   )
 ```
 
-
-## Notes
-
-The final column seems to be a comments section, will rename as such. 
+## Total T3
 
 ```{r}
-TSH  <- 
-  TSH %>% 
-  rename(
-    comments = ...19
-  )
+TSH %>% count(`T3 - Free or Total`)
 ```
+
 
 # Save clean data
 
