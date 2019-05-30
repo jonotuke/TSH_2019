@@ -1,5 +1,5 @@
 ---
-title: "Prelim visuals"
+title: "Prelim analysis"
 author: "Jono Tuke"
 date: "23/03/2019"
 output: 
@@ -26,7 +26,7 @@ source("../code/get_label.R")
 # Read in clean data
 
 ```{r}
-TSH_long  <- read_rds("../data/20190324-02_convert_long.rds")
+TSH_long  <- read_rds("../data/20190530-02_convert_long.rds")
 TSH_long
 ```
 

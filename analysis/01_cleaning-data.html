@@ -2485,6 +2485,18 @@ pv</code></pre>
 ## 1 &lt;NA&gt;                   289
 ## 2 Free                   108
 ## 3 Total                   65</code></pre>
+<p>Rename</p>
+<pre class="r"><code>TSH  &lt;- 
+  TSH %&gt;% 
+  rename(
+    T3_total = `T3 - Free or Total`
+  )</code></pre>
+</div>
+<div id="remove-original-pv-columns" class="section level2">
+<h2><span class="header-section-number">3.23</span> Remove original PV columns</h2>
+<pre class="r"><code>TSH  &lt;- 
+  TSH %&gt;% 
+  select(-FT4_PV, -TSH_PV, -T3_PV)</code></pre>
 </div>
 </div>
 <div id="save-clean-data" class="section level1">

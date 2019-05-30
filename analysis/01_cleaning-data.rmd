@@ -498,6 +498,25 @@ TSH  <-
 TSH %>% count(`T3 - Free or Total`)
 ```
 
+Rename
+
+```{r}
+TSH  <- 
+  TSH %>% 
+  rename(
+    T3_total = `T3 - Free or Total`
+  )
+```
+
+
+## Remove original PV columns
+
+```{r}
+TSH  <- 
+  TSH %>% 
+  select(-FT4_PV, -TSH_PV, -T3_PV)
+```
+
 
 # Save clean data
 
