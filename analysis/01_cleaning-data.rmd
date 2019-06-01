@@ -26,6 +26,7 @@ source("../code/clean_levels.R")
 source("../code/clean_n.R")
 source("../code/get_inferred.R")
 source("../code/clean_pv.R")
+source("../code/add_cohort.R")
 ```
 
 # Nigel's cleaning
@@ -515,6 +516,23 @@ TSH  <-
 TSH  <- 
   TSH %>% 
   select(-FT4_PV, -TSH_PV, -T3_PV)
+```
+
+## Add cohort column
+
+
+```{r code=readLines("../code/add_cohort.R"), eval = FALSE}
+```
+
+```{r}
+TSH  <- 
+  TSH %>% group_by(Paper) %>% 
+  mutate(cohort = add_cohort(FT4_N))
+```
+
+```{r, fig.asp=2}
+TSH %>% ggplot(aes(cohort, FT4_N)) + geom_point() + 
+  facet_wrap(~Paper, scales = "free", ncol = 3)
 ```
 
 

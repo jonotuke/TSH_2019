@@ -41,5 +41,3 @@ clean_levels(x, check = TRUE, blacklist = c("good is bob"))
 clean_levels(x)
 expect_equal(clean_levels(x), c("BOB","BOB","BOB", "BOb is good", "BOb is good"))
 expect_equal(clean_levels(x,blacklist = c("good is bob")), c("BOB","BOB","BOB", "BOb is good", "good is bob"))
-
-             

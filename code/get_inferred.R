@@ -12,3 +12,4 @@ get_inferred  <- function(x){
 }
 expect_equal(get_inferred(c("N", "N*", "Y", "Y*")), 
              c(FALSE, TRUE, FALSE, TRUE))
+
