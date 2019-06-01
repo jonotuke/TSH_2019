@@ -64,3 +64,11 @@ Email from Nigel
 # Thursday 30 May 2019
 
 1. Finished adding new clean pv function and cleaned the rest of the data. 
+2. Primary analysis using RE model. 
+
+# Friday 31 May 2019
+
+1. Meeting with NB - happy with results, but going to add a cohort within paper RI. 
+
+# Saturday 01 Jun 2019
+
