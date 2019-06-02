@@ -28,7 +28,7 @@ source("../code/get_cov.R")
 # Read in clean data
 
 ```{r}
-TSH_long  <- read_rds("../data/20190530-02_convert_long.rds")
+TSH_long  <- read_rds("../data/2019061-02_convert_long.rds")
 TSH_long
 ```
 
@@ -118,12 +118,17 @@ Again some interaction.
 
 We will use a mixed-effect model with the paper ID as a random intercept and thyroid method as a fixed effect. 
 
-Need to convert `Sig` to factor
+Need to convert `Sig` to factor. Also remove missing
 
 ```{r}
 TSH_long  <- 
   TSH_long %>% 
   mutate(Sig = factor(Sig))
+```
+
+```{r}
+TSH_long <- 
+  TSH_long %>% filter(!is.na(Sig))
 ```
 
 
@@ -136,7 +141,7 @@ pacman::p_load(lme4, lmerTest)
 Start with single fixed effect - thyroid test, and single random intercept (RI) for each paper. 
 
 ```{r}
-tsh_glmer  <- glmer(Sig ~ Thyroid_test + (1 | ID), data = TSH_long, family = binomial)
+tsh_glmer  <- glmer(Sig ~ Thyroid_test + (1 | Paper), data = TSH_long, family = binomial)
 ```
 
 Compare model to one without RI.
@@ -151,7 +156,7 @@ Looks like need RI.
 Test for significant differences between tests. 
 
 ```{r}
-tsh_glmer_null  <- glmer(Sig ~ 1 + (1 | ID), data = TSH_long, family = binomial)
+tsh_glmer_null  <- glmer(Sig ~ 1 + (1 | Paper), data = TSH_long, family = binomial)
 anova(tsh_glmer, tsh_glmer_null)
 ```
 
@@ -197,4 +202,64 @@ n_cov_models %>% arrange(BIC) %>% knitr::kable()
 
 
 So we seem to have a lot of problems getting the RI to fit. May be able to tinker and improve. Looking at the various possible covariates we find that some of them increase the prediction of the probability of significance - system and number of subject. This is based on BIC. Number of covariates does not seem to improve the model. 
+
+# Model to take into account cohorts
+
+Looked at the lme4 paper
+
+```{r, echo = FALSE}
+knitr::include_graphics("../figs/20190601-lme4-paper.png")
+```
+
+The notation is given in Table 2 of the paper:
+
+```{r, echo = FALSE}
+knitr::include_graphics("../figs/20190601-nest-RE.png")
+```
+
+
+Looks like we want
+
+```
+(1 | paper/cohort)
+```
+
+```{r}
+tsh_glmer_M_paperRI  <- glmer(Sig ~ Thyroid_test + (1 | Paper), 
+                              data = TSH_long, family = binomial)
+tsh_glmer_M_paper_cohort_RI  <- glmer(Sig ~ Thyroid_test + (1 | Paper / cohort), 
+                                      data = TSH_long, family = binomial)
+tsh_glmer_M_no_test  <- glmer(Sig ~ 1 + (1 | Paper / cohort), 
+                              data = TSH_long, family = binomial)
+```
+
+
+First test for whether need cohort RI:
+
+```{r}
+anova(tsh_glmer_M_paperRI, tsh_glmer_M_paper_cohort_RI)
+```
+
+Small p-value so looks like we need cohort and paper RI. 
+
+No test for significant effect of test
+
+```{r}
+anova(tsh_glmer_M_paper_cohort_RI, tsh_glmer_M_no_test)
+```
+
+So still significant effect of type of test. 
+
+Look at effect of test. 
+
+```{r}
+summary(tsh_glmer_M_paper_cohort_RI)
+```
+
+As before probability of significance is significantly lower than FT4 and T3. 
+
+```{r}
+plot(tsh_glmer_M_paper_cohort_RI)
+```
+
 

@@ -26,7 +26,7 @@ source("../code/get_label.R")
 # Read in clean data
 
 ```{r}
-TSH  <- read_rds("../data/20190530-01_cleaning-data.rds")
+TSH  <- read_rds("../data/2019061-01_cleaning-data.rds")
 TSH
 ```
 

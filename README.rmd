@@ -72,3 +72,10 @@ Email from Nigel
 
 # Saturday 01 Jun 2019
 
+Realised that making mistake - using ID - test inside paper - rather than paper as RI. Changed - results more robust but no changes - phew. 
+
+1. Code to get cohorts. 
+
+# Sunday 02 Jun 2019
+
+1. code to look at cohort / paper RI. All done. 

@@ -1,10 +1,10 @@
 pacman::p_load(glue)
 get_cov  <- function(cov){
-  f1  <- as.formula(glue("Sig ~ Thyroid_test * {cov} + (1 | ID)"))
+  f1  <- as.formula(glue("Sig ~ Thyroid_test * {cov} + (1 | Paper)"))
   M1  <- glmer(f1, data = TSH_long, family = binomial)
-  f2  <- as.formula(glue("Sig ~ Thyroid_test + {cov} + (1 | ID)"))
+  f2  <- as.formula(glue("Sig ~ Thyroid_test + {cov} + (1 | Paper)"))
   M2  <- glmer(f2, data = TSH_long, family = binomial)
-  f3  <- as.formula(glue("Sig ~ Thyroid_test + (1 | ID)"))
+  f3  <- as.formula(glue("Sig ~ Thyroid_test + (1 | Paper)"))
   M3  <- glmer(f3, data = TSH_long, family = binomial)
   f4  <- as.formula(glue("Sig ~ Thyroid_test * {cov}"))
   M4  <- glm(f4, data = TSH_long, family = binomial)
