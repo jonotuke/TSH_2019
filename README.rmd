@@ -79,3 +79,36 @@ Realised that making mistake - using ID - test inside paper - rather than paper 
 # Sunday 02 Jun 2019
 
 1. code to look at cohort / paper RI. All done. 
+
+# Tuesday 04 Jun 2019
+
+1. [] Add in style (quantiles etc) as either RI or split data based on. 
+2. [] Add in level of sophistication of model either as RI or split data based on.
+3. [] ANCOVA for probability of significance against n_obs, n_cov for each Tx, expect that slope of T3 is not zero. 
+4. [] Add in extra treatment for Free T3 versus Total T3
+5. [] Aggregate systems according to "atrial fibrillation (AF)[26-30], osteoporosis [31-35], and  cancer" (high tyroid function) and "steatohepatitis [39-41] and the features of the metabolic syndrome" (low thyroid function)
+# Tuesday 11 Jun 2019
+
+Email from Stephen
+
+> Dear All,
+> 
+> Find attached a draft paper. This has been prepared pending final mathematical analyses on the understanding that the results will not change. I have edited a little and have deleted many figures and tables, replacing them with a sentence or two. I have anticipated that our excel sheet with all of the data will be submitted as a supplement. I also imagine that we will submit some of the graphs of the results. I have yet to tidy up references.
+> 
+> Dear Nigel,
+please check that you are happy with the logic etc and would be happy to have the paper submitted in your absence once the gaps are filled. You Jono and I might need to meet before you leave.
+> 
+> Dear Henrik,
+please check the paper- in particular note that the literature search is now in 2 stages-ie a general review and then focus on the articles that are most relevant. We do not as yet have a figure to describe the searches(?). Note that I have indicated in the text that our study is not an interventional study and that this is the reason for the adjustment of the NOS scale.(?)
+>
+> Dear Simon and Nigel,
+> I think I am still awaiting your consideration of the effects of multiple comparisons. We will also need to be able to say something about whether the use of T3 in some studies and FT3 in others is important. Are you able to confirm that parameters associated with hyperthyroidism (AF, low bone density and cancer) were more consistent in terms of correlations than parameters assoc c low thyroid function (obesity/metabolic syndrome/steatohepatitis). e.g. Was 'no significant relationship ' more likely with low thyroid function parameters.
+>
+> Are you able to comment on whether or not measurement of T3/FT3 adds anything to the measurement of FT4?
+
+> Note that 'Statistical methods' and 'Results' need filling out/re-casting depending on the details of what you did and found. Please also suggest best graphs to include.
+
+> Dear All,
+'Thyroid' requires all figures to be in .tif or .eps files. These are not available on my old program. Are tables too, saveable in such format- do they need to be- are they counted as 'figures'? Henrik , if you do figure(s) for the search can you do the appropriate format?
+best wishes,
+Stephen

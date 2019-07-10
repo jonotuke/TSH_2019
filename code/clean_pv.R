@@ -51,7 +51,8 @@ clean_pv  <- function(x, check = FALSE){
   return(df)
 }
 df  <- tibble(
-  x_PV = c("0.001", "<0.001", "1.1(0.9-1.2)", "not stated", "11/100(1-2)", "1(0.9-1.2)")
+  x_PV = c("0.001", "<0.001", "1.1(0.9-1.2)", 
+           "not stated", "11/100(1-2)", "1(0.9-1.2)")
   )
 results  <- clean_pv(df$x_PV)
 results

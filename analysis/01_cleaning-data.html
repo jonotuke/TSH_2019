@@ -1587,7 +1587,8 @@ clean_pv  &lt;- function(x, check = FALSE){
   return(df)
 }
 df  &lt;- tibble(
-  x_PV = c(&quot;0.001&quot;, &quot;&lt;0.001&quot;, &quot;1.1(0.9-1.2)&quot;, &quot;not stated&quot;, &quot;11/100(1-2)&quot;, &quot;1(0.9-1.2)&quot;)
+  x_PV = c(&quot;0.001&quot;, &quot;&lt;0.001&quot;, &quot;1.1(0.9-1.2)&quot;, 
+           &quot;not stated&quot;, &quot;11/100(1-2)&quot;, &quot;1(0.9-1.2)&quot;)
   )
 results  &lt;- clean_pv(df$x_PV)
 results
