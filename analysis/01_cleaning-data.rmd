@@ -49,7 +49,8 @@ Nigel did some cleaning of the original dataset as follows
 
 ```{r}
 # TSH  <- read_excel("../data/20190318_excel tsh_2019_data.xlsx")
-TSH  <- read_excel("../raw data/20190519_excel tsh_2019_data.xlsx")
+# TSH  <- read_excel("../raw data/20190519_excel tsh_2019_data.xlsx")
+TSH  <- read_excel("../raw data/20190708_excel tsh_2019_data.xlsx")
 TSH
 ```
 
@@ -337,6 +338,12 @@ TSH  <-
   )
 ```
 
+## FT4_sophistication
+
+```{r}
+TSH %>% count(FT4_Sophistication)
+TSH %>% filter(is.na(FT4_Sophistication))
+```
 
 ## TSH_N
 
@@ -407,6 +414,13 @@ TSH  <-
   mutate(
     TSH_cov = clean_levels(TSH_cov)
   )
+```
+
+## TSH_sophistication
+
+```{r}
+TSH %>% count(TSH_Sophistication)
+TSH %>% filter(is.na(TSH_Sophistication))
 ```
 
 
@@ -491,6 +505,12 @@ TSH  <-
   mutate(
     T3_cov = clean_levels(T3_cov)
   )
+```
+
+## T3_sophistication
+
+```{r}
+TSH %>% count(T3_Sophistication)
 ```
 
 ## Total T3

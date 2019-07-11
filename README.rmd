@@ -83,10 +83,12 @@ Realised that making mistake - using ID - test inside paper - rather than paper 
 # Tuesday 04 Jun 2019
 
 1. [] Add in style (quantiles etc) as either RI or split data based on. 
-2. [] Add in level of sophistication of model either as RI or split data based on.
-3. [] ANCOVA for probability of significance against n_obs, n_cov for each Tx, expect that slope of T3 is not zero. 
-4. [] Add in extra treatment for Free T3 versus Total T3
-5. [] Aggregate systems according to "atrial fibrillation (AF)[26-30], osteoporosis [31-35], and  cancer" (high tyroid function) and "steatohepatitis [39-41] and the features of the metabolic syndrome" (low thyroid function)
+2. [x] Add in level of sophistication of model either as RI or split data based on.
+3. [x] ANCOVA for probability of significance against n_obs, n_cov for each Tx, expect that slope of T3 is not zero. Realised that already done with `get_cov()` function. 
+4. [x] Add in extra treatment for Free T3 versus Total T3
+5. [x] Aggregate systems according to "atrial fibrillation (AF)[26-30], osteoporosis [31-35], and  cancer" (high tyroid function) and "steatohepatitis [39-41] and the features of the metabolic syndrome" (low thyroid function)
+6. [] Repeat overall test with minimum (and maximum) sophistication per paper
+
 # Tuesday 11 Jun 2019
 
 Email from Stephen

@@ -28,7 +28,7 @@ source("../code/get_cov.R")
 # Read in clean data
 
 ```{r}
-TSH_long  <- read_rds("../data/2019061-02_convert_long.rds")
+TSH_long  <- read_rds("../data/20190711-02_convert_long.rds")
 TSH_long
 ```
 
@@ -262,4 +262,145 @@ As before probability of significance is significantly lower than FT4 and T3.
 plot(tsh_glmer_M_paper_cohort_RI)
 ```
 
+# Model to take into account style
+
+Will be similar to above. First examine possible styles
+
+```{r}
+TSH_long %>% 
+  count(CvQ) %>% 
+  knitr::kable()
+```
+
+Need to talk to NB about which to keep. 
+
+# Model to take into account sophistication
+
+```{r}
+TSH_long %>% 
+  count(Sophistication)
+```
+
+Need to remove NAs
+
+```{r}
+TSH_long_noNA  <- 
+  TSH_long %>% 
+  filter(!is.na(Sophistication))
+```
+
+
+Fit all models
+
+```{r}
+tsh_glmer_M_paperRI  <- glmer(Sig ~ Thyroid_test + (1 | Paper), 
+                              data = TSH_long_noNA, family = binomial)
+tsh_glmer_M_paper_soph_RI  <- glmer(Sig ~ Thyroid_test + (1 | Paper / Sophistication), 
+                                      data = TSH_long_noNA, family = binomial)
+tsh_glmer_M_no_test  <- glmer(Sig ~ 1 + (1 | Paper / cohort), 
+                              data = TSH_long_noNA, family = binomial)
+```
+
+First test for whether need sophistication RI:
+
+```{r}
+anova(tsh_glmer_M_paperRI, tsh_glmer_M_paper_soph_RI)
+```
+
+Not significant so not needed. 
+
+# Extra treatment
+
+## Add in variable
+
+So we will split T3 into T3_total amnd T3_free
+
+```{r}
+TSH_long <- 
+  TSH_long %>% 
+  mutate(
+    Thyroid_test_4 = ifelse(
+      is.na(total), 
+      Thyroid_test, 
+      paste0(Thyroid_test, "_",total)
+    )
+  )
+```
+
+## CIs
+
+```{r}
+overall_ci  <- 
+  TSH_long %>% 
+  filter(!is.na(Sig)) %>% 
+  group_by(Thyroid_test_4) %>% 
+  summarise(
+    n_sig = sum(Sig == "Y"), 
+    N = n(), 
+    p = n_sig / N,
+    lwr = p - 1.96 * sqrt(p * (1 - p) / N),
+    upr = p + 1.96 * sqrt(p * (1 - p) / N)
+  )
+overall_ci
+```
+
+```{r}
+ggplot(overall_ci, aes( Thyroid_test_4, p, col = Thyroid_test_4)) + 
+  geom_point() + 
+  geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0.1) + 
+  theme(legend.position = "none") + 
+  labs(y = "Proportion")
+```
+
+## Modelling
+
+
+Will remove single T3
+
+```{r}
+TSH_long_noT3  <- TSH_long %>% filter(Thyroid_test_4 != "T3")
+```
+
+```{r}
+tsh_glmer  <- glmer(Sig ~ Thyroid_test_4 + (1 | Paper), data = TSH_long_noT3, family = binomial)
+tsh_glm  <- glm(Sig ~ Thyroid_test_4, data = TSH_long_noT3, family = binomial)
+anova(tsh_glmer, tsh_glm)
+tsh_glmer_null  <- glmer(Sig ~ 1 + (1 | Paper), data = TSH_long_noT3, family = binomial)
+anova(tsh_glmer, tsh_glmer_null)
+summary(tsh_glmer)
+```
+
+
+```{r}
+pacman::p_load(multcomp)
+summary(glht(tsh_glmer, linfct = mcp(Thyroid_test_4 = "Tukey")))
+```
+
+# Look at selected systems
+
+```{r}
+TSH_long <- 
+  TSH_long %>% 
+  mutate(high_low = case_when(
+    str_detect(Condition, "AF") ~ "high", 
+    str_detect(Condition, "low bone density") ~ "high", 
+    system == "cancer" ~ "high", 
+    str_detect(Condition, "fatty liver") ~ "low", 
+    system == "metabolic" ~ "low", 
+    TRUE ~ "neither"
+  ))
+```
+
+
+```{r}
+visualise_ci(TSH_long, high_low)
+```
+
+```{r}
+high_low_models  <- get_cov("high_low")
+```
+
+```{r}
+high_low_models %>% arrange(BIC) %>% knitr::kable()
+```
 
