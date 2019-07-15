@@ -107,22 +107,19 @@ TSH %>%
 
 I assume that `quartile analysis` and `Quartile analysis` are the same so collapse, similar process for others. This has been fixed by NB in raw data file. 
 
+Will map `dichotomised` to `Dichotomous`
+
 ```{r}
-# TSH  <- 
-#   TSH %>% mutate(
-#   CvQ = fct_recode(
-#     CvQ,
-#     `Quartile analysis` = "quartile analysis", 
-#     Quartiles = "quartiles",
-#     Tertiles = "tertiles"
-#   )
-# )
+TSH  <- 
+  TSH %>% 
+  mutate(
+    CvQ = str_replace(CvQ, "dichotomised", "Dichotomous")
+    )
 ```
 
 ```{r}
 TSH %>% 
-  count(CvQ) %>% 
-  print(n = 20)
+  count(CvQ)
 ```
 
 ## Condition

@@ -516,32 +516,27 @@ TSH</code></pre>
 ## 10 Tertiles                                                              23
 ## 11 &quot;Total cohort -978 normal, 420 osteopenic, 77 osteoporotic- in hi…     1</code></pre>
 <p>I assume that <code>quartile analysis</code> and <code>Quartile analysis</code> are the same so collapse, similar process for others. This has been fixed by NB in raw data file.</p>
-<pre class="r"><code># TSH  &lt;- 
-#   TSH %&gt;% mutate(
-#   CvQ = fct_recode(
-#     CvQ,
-#     `Quartile analysis` = &quot;quartile analysis&quot;, 
-#     Quartiles = &quot;quartiles&quot;,
-#     Tertiles = &quot;tertiles&quot;
-#   )
-# )</code></pre>
+<p>Will map <code>dichotomised</code> to <code>Dichotomous</code></p>
+<pre class="r"><code>TSH  &lt;- 
+  TSH %&gt;% 
+  mutate(
+    CvQ = str_replace(CvQ, &quot;dichotomised&quot;, &quot;Dichotomous&quot;)
+    )</code></pre>
 <pre class="r"><code>TSH %&gt;% 
-  count(CvQ) %&gt;% 
-  print(n = 20)</code></pre>
-<pre><code>## # A tibble: 11 x 2
+  count(CvQ)</code></pre>
+<pre><code>## # A tibble: 10 x 2
 ##    CvQ                                                                    n
 ##    &lt;chr&gt;                                                              &lt;int&gt;
 ##  1 Continuous                                                           376
-##  2 dichotomised                                                           6
-##  3 Dichotomous                                                            1
-##  4 FT4 lmean levels differed according to normal, osteoporosis, oste…     1
-##  5 PERFORMANCE                                                            8
-##  6 PERFORMANCE CHANGE                                                     8
-##  7 prevalence of ostopenia in upper FT4 quartile; lower TSH quartile      1
-##  8 Quartiles                                                             31
-##  9 Quintiles                                                              6
-## 10 Tertiles                                                              23
-## 11 &quot;Total cohort -978 normal, 420 osteopenic, 77 osteoporotic- in hi…     1</code></pre>
+##  2 Dichotomous                                                            7
+##  3 FT4 lmean levels differed according to normal, osteoporosis, oste…     1
+##  4 PERFORMANCE                                                            8
+##  5 PERFORMANCE CHANGE                                                     8
+##  6 prevalence of ostopenia in upper FT4 quartile; lower TSH quartile      1
+##  7 Quartiles                                                             31
+##  8 Quintiles                                                              6
+##  9 Tertiles                                                              23
+## 10 &quot;Total cohort -978 normal, 420 osteopenic, 77 osteoporotic- in hi…     1</code></pre>
 </div>
 <div id="condition" class="section level2">
 <h2><span class="header-section-number">3.5</span> Condition</h2>
@@ -570,16 +565,16 @@ TSH</code></pre>
 <p>These methods come from openrefine - see also</p>
 <p><a href="https://github.com/OpenRefine/OpenRefine/wiki/Clustering-In-Depth" class="uri">https://github.com/OpenRefine/OpenRefine/wiki/Clustering-In-Depth</a></p>
 <pre class="r"><code>pacman::p_load(tidyverse, refinr, testthat)
-#&#39; Looks for duplicates in levels
-#&#39;
-#&#39; @param x vector to check
-#&#39; @param check print out report of changes
-#&#39; @param blacklist list of strings to ignore
-#&#39;
-#&#39; @return new vector with duplicates gone
-#&#39; @export
-#&#39;
-#&#39; @examples
+#' Looks for duplicates in levels
+#'
+#' @param x vector to check
+#' @param check print out report of changes
+#' @param blacklist list of strings to ignore
+#'
+#' @return new vector with duplicates gone
+#' @export
+#'
+#' @examples
 clean_levels  &lt;- function(x, check = FALSE, blacklist = NULL){
   # Convert to character
   x  &lt;- as.character(x)
@@ -1229,15 +1224,15 @@ TSH %&gt;%
 <p>So some seem to have cases and controls. I will use the total as N, also not stated I will see to NA. Finally approx will be set to the value.</p>
 <pre class="r"><code>pacman::p_load(tidyverse, testthat)
 
-#&#39; Convert numbers to a single number
-#&#39;
-#&#39; @param x string vector
-#&#39; @param check return a report or not
-#&#39;
-#&#39; @return numeric vector
-#&#39; @export
-#&#39;
-#&#39; @examples
+#' Convert numbers to a single number
+#'
+#' @param x string vector
+#' @param check return a report or not
+#'
+#' @return numeric vector
+#' @export
+#'
+#' @examples
 clean_n  &lt;- function(x, check = FALSE){
   origin_x  &lt;- x
   # Get rid of not stated
@@ -1503,14 +1498,14 @@ expect_equal(clean_n(x), c(NA, 250, 22, 24, 33))</code></pre>
 ## 3 Y         260</code></pre>
 <p>Not sure what N* is. NB has found that N* are inferred, but fine. Will convert and add inferred column</p>
 <pre class="r"><code>pacman::p_load(tidyverse, testthat)
-#&#39; Adds column that indicates if a significant results is inferred based on *
-#&#39;
-#&#39; @param x character string
-#&#39;
-#&#39; @return boolean vector
-#&#39; @export
-#&#39;
-#&#39; @examples
+#' Adds column that indicates if a significant results is inferred based on *
+#'
+#' @param x character string
+#'
+#' @return boolean vector
+#' @export
+#'
+#' @examples
 get_inferred  &lt;- function(x){
   ifelse(str_detect(x, &quot;\\*&quot;), TRUE, FALSE)
 }
@@ -1539,15 +1534,15 @@ table(TSH$FT4_Sig, TSH$FT4_inferred)</code></pre>
 <p>Function to take PV column and convert to PV, OR CI, and count CI.</p>
 <pre class="r"><code>pacman::p_load(tidyverse, testthat, readxl)
 
-#&#39; Extracts information from PV column
-#&#39;
-#&#39; @param x string vector
-#&#39; @param check will give enteries that did not parse
-#&#39;
-#&#39; @return data frame with pvalue, OR, and count. 
-#&#39; @export
-#&#39;
-#&#39; @examples
+#' Extracts information from PV column
+#'
+#' @param x string vector
+#' @param check will give enteries that did not parse
+#'
+#' @return data frame with pvalue, OR, and count. 
+#' @export
+#'
+#' @examples
 clean_pv  &lt;- function(x, check = FALSE){
   type  &lt;- str_match(quo_name(enquo(x)), &quot;\\$(.*)_PV&quot;)[, 2]
   origin_x  &lt;- x
@@ -1632,7 +1627,7 @@ pv</code></pre>
 <pre class="r"><code>TSH  &lt;- 
   TSH %&gt;% 
   bind_cols(pv)</code></pre>
-<p>Have removed CI, and converted $&lt; p $ to p. </p>
+<p>Have removed CI, and converted $&lt; p $ to p.</p>
 <pre class="r"><code>TSH %&gt;% 
   ggplot(aes(FT4_pv)) + geom_histogram(col = &quot;black&quot;, fill = &quot;orange&quot;)</code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
@@ -2556,14 +2551,14 @@ pv</code></pre>
 </div>
 <div id="add-cohort-column" class="section level2">
 <h2><span class="header-section-number">3.27</span> Add cohort column</h2>
-<pre class="r"><code>#&#39; add cohorts to papers
-#&#39;
-#&#39; @param n is the observed number of subjects
-#&#39;
-#&#39; @return factor for each unique size
-#&#39; @export
-#&#39;
-#&#39; @examples
+<pre class="r"><code>#' add cohorts to papers
+#'
+#' @param n is the observed number of subjects
+#'
+#' @return factor for each unique size
+#' @export
+#'
+#' @examples
 add_cohort  &lt;- function(n){
   m  &lt;- length(unique(n))
   cohorts  &lt;- str_c(&quot;C&quot;, 1:m)

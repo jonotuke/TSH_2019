@@ -26,7 +26,7 @@ source("../code/get_label.R")
 # Read in clean data
 
 ```{r}
-TSH  <- read_rds("../data/20190711-01_cleaning-data.rds")
+TSH  <- read_rds("../data/20190712-01_cleaning-data.rds")
 TSH
 ```
 
@@ -55,8 +55,75 @@ TSH_long  <-
 TSH_long
 ```
 
+# Add in extra treatment
+
+So we will split T3 into T3_total and T3_free
+
+```{r}
+TSH_long <- 
+  TSH_long %>% 
+  mutate(
+    Thyroid_test_4 = ifelse(
+      is.na(total), 
+      Thyroid_test, 
+      paste0(Thyroid_test, "_",total)
+    )
+  )
+TSH_long %>% 
+  count(Thyroid_test_4)
+```
+
+# Add in high low classification of systems
+
+Based on classification by SF. 
+
+```{r}
+TSH_long <- 
+  TSH_long %>% 
+  mutate(high_low = case_when(
+    str_detect(Condition, "AF") ~ "high", 
+    str_detect(Condition, "low bone density") ~ "high", 
+    system == "cancer" ~ "high", 
+    str_detect(Condition, "fatty liver") ~ "low", 
+    system == "metabolic" ~ "low", 
+    TRUE ~ "both"
+  ))
+```
 
 
+# Number of covariates in the model
+
+```{r}
+TSH_long$n_cov  <- str_split(TSH_long$cov, ",") %>% map(length) %>% unlist()
+table(TSH_long$n_cov)
+```
+
+Will split into 1, 2, 3, more
+
+```{r}
+TSH_long <- 
+  TSH_long %>% 
+  mutate(
+    n_cov = case_when(
+      n_cov == 1 ~ "1", 
+      n_cov == 2 ~ "2", 
+      n_cov == 3 ~ "3", 
+      TRUE ~ "more"
+    )
+  )
+```
+
+# N
+
+```{r}
+TSH_long %>% ggplot(aes(N)) + geom_histogram(col = "black", fill = "orange")
+TSH_long  <- 
+  TSH_long %>% 
+  mutate(N_bin = cut_number(N, 5))
+TSH_long %>% filter(is.na(N_bin))
+```
+
+# 
 
 
 

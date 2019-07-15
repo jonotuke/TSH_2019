@@ -1,5 +1,5 @@
 ---
-title: "Prelim analysis"
+title: "Modelling"
 author: "Jono Tuke"
 date: "`r Sys.Date()`"
 output: 
@@ -28,93 +28,13 @@ source("../code/get_cov.R")
 # Read in clean data
 
 ```{r}
-TSH_long  <- read_rds("../data/20190711-02_convert_long.rds")
-TSH_long
+TSH_long  <- read_rds("../data/20190712-02_convert_long.rds")
 ```
 
-
-# Visual comparison
-
-## Overall
-
-```{r}
-overall_ci  <- 
-  TSH_long %>% 
-  filter(!is.na(Sig)) %>% 
-  group_by(Thyroid_test) %>% 
-  summarise(
-    n_sig = sum(Sig == "Y"), 
-    N = n(), 
-    p = n_sig / N,
-    lwr = p - 1.96 * sqrt(p * (1 - p) / N),
-    upr = p + 1.96 * sqrt(p * (1 - p) / N)
-  )
-overall_ci
-ggplot(overall_ci, aes( Thyroid_test, p, col = Thyroid_test)) + 
-  geom_point() + 
-  geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0.1) + 
-  theme(legend.position = "none") + 
-  labs(y = "Proportion")
-```
-
-
-## System
-
-```{r}
-visualise_ci(TSH_long, system)
-```
-
-## Method
-
-```{r, fig.asp=1}
-visualise_ci(TSH_long, method)
-```
-
-Too many to see a good pattern. 
-
-## N
-
-```{r}
-TSH_long %>% ggplot(aes(N)) + geom_histogram(col = "black", fill = "orange")
-TSH_long  <- 
-  TSH_long %>% 
-  mutate(N_bin = cut_number(N, 5))
-TSH_long %>% filter(is.na(N_bin))
-visualise_ci(TSH_long, N_bin)
-```
-
-Looks like some interaction effect
-
-
-## Number of covariates in model
-
-```{r}
-TSH_long$n_cov  <- str_split(TSH_long$cov, ",") %>% map(length) %>% unlist()
-table(TSH_long$n_cov)
-```
-
-Will split into 1, 2, 3, more
-
-```{r}
-TSH_long <- 
-  TSH_long %>% 
-  mutate(
-    n_cov = case_when(
-      n_cov == 1 ~ "1", 
-      n_cov == 2 ~ "2", 
-      n_cov == 3 ~ "3", 
-      TRUE ~ "more"
-    )
-  )
-```
-
-```{r}
-visualise_ci(TSH_long, n_cov)
-```
-
-Again some interaction. 
 
 # Modelling
+
+## Three thyroid tests
 
 We will use a mixed-effect model with the paper ID as a random intercept and thyroid method as a fixed effect. 
 
@@ -138,6 +58,8 @@ Load necessary packages
 pacman::p_load(lme4, lmerTest)
 ```
 
+### Random effects
+
 Start with single fixed effect - thyroid test, and single random intercept (RI) for each paper. 
 
 ```{r}
@@ -153,6 +75,8 @@ anova(tsh_glmer, tsh_glm)
 
 Looks like need RI. 
 
+### Fixed effects
+
 Test for significant differences between tests. 
 
 ```{r}
@@ -161,7 +85,6 @@ anova(tsh_glmer, tsh_glmer_null)
 ```
 
 Looks like significant effect of test. 
-
 
 Also check with BIC - smaller is better. 
 
@@ -176,6 +99,32 @@ summary(tsh_glmer)
 ```
 
 From this - look at fixed effect output. We have that TSH has a signicantly smaller probability of significance compared to T4. T3 and T4 are not significantly different. 
+
+
+## Four thyroid tests
+
+Will remove single T3
+
+```{r}
+TSH_long %>% count(Thyroid_test_4)
+```
+
+# HERE
+
+```{r}
+tsh_glmer  <- glmer(Sig ~ Thyroid_test_4 + (1 | Paper), data = TSH_long, family = binomial)
+tsh_glm  <- glm(Sig ~ Thyroid_test_4, data = TSH_long, family = binomial)
+anova(tsh_glmer, tsh_glm)
+tsh_glmer_null  <- glmer(Sig ~ 1 + (1 | Paper), data = TSH_long, family = binomial)
+anova(tsh_glmer, tsh_glmer_null)
+summary(tsh_glmer)
+```
+
+
+```{r}
+pacman::p_load(multcomp)
+summary(glht(tsh_glmer, linfct = mcp(Thyroid_test_4 = "Tukey")))
+```
 
 ## Try adding in other covariates. 
 
@@ -309,72 +258,9 @@ anova(tsh_glmer_M_paperRI, tsh_glmer_M_paper_soph_RI)
 
 Not significant so not needed. 
 
-# Extra treatment
-
-## Add in variable
-
-So we will split T3 into T3_total amnd T3_free
-
-```{r}
-TSH_long <- 
-  TSH_long %>% 
-  mutate(
-    Thyroid_test_4 = ifelse(
-      is.na(total), 
-      Thyroid_test, 
-      paste0(Thyroid_test, "_",total)
-    )
-  )
-```
-
-## CIs
-
-```{r}
-overall_ci  <- 
-  TSH_long %>% 
-  filter(!is.na(Sig)) %>% 
-  group_by(Thyroid_test_4) %>% 
-  summarise(
-    n_sig = sum(Sig == "Y"), 
-    N = n(), 
-    p = n_sig / N,
-    lwr = p - 1.96 * sqrt(p * (1 - p) / N),
-    upr = p + 1.96 * sqrt(p * (1 - p) / N)
-  )
-overall_ci
-```
-
-```{r}
-ggplot(overall_ci, aes( Thyroid_test_4, p, col = Thyroid_test_4)) + 
-  geom_point() + 
-  geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0.1) + 
-  theme(legend.position = "none") + 
-  labs(y = "Proportion")
-```
-
-## Modelling
 
 
-Will remove single T3
 
-```{r}
-TSH_long_noT3  <- TSH_long %>% filter(Thyroid_test_4 != "T3")
-```
-
-```{r}
-tsh_glmer  <- glmer(Sig ~ Thyroid_test_4 + (1 | Paper), data = TSH_long_noT3, family = binomial)
-tsh_glm  <- glm(Sig ~ Thyroid_test_4, data = TSH_long_noT3, family = binomial)
-anova(tsh_glmer, tsh_glm)
-tsh_glmer_null  <- glmer(Sig ~ 1 + (1 | Paper), data = TSH_long_noT3, family = binomial)
-anova(tsh_glmer, tsh_glmer_null)
-summary(tsh_glmer)
-```
-
-
-```{r}
-pacman::p_load(multcomp)
-summary(glht(tsh_glmer, linfct = mcp(Thyroid_test_4 = "Tukey")))
-```
 
 # Look at selected systems
 

@@ -13,3 +13,8 @@ glue
 Matrix
 lme4
 lmerTest
+mvtnorm
+survival
+MASS
+TH.data
+multcomp
