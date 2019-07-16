@@ -26,7 +26,7 @@ source("../code/get_label.R")
 # Read in clean data
 
 ```{r}
-TSH  <- read_rds("../data/20190712-01_cleaning-data.rds")
+TSH  <- read_rds("../data/20190716-01_cleaning-data.rds")
 TSH
 ```
 
@@ -42,7 +42,7 @@ First take the the significance so row for each significance result. The key mea
 
 ```{r}
 TSH
-TSH %>% select(dplyr::matches("FT4|TSH|T3"))
+TSH %>% dplyr::select(dplyr::matches("FT4|TSH|T3"))
 spec  <- TSH %>% 
   pivot_longer_spec(
     cols = dplyr::matches("FT4|TSH|T3"), 
@@ -123,7 +123,10 @@ TSH_long  <-
 TSH_long %>% filter(is.na(N_bin))
 ```
 
-# 
+```{r}
+TSH_long
+```
+
 
 
 

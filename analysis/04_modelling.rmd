@@ -18,7 +18,8 @@ knitr::opts_chunk$set(
   root.dir = '../'
 )
 pacman::p_load(
-  tidyverse, lubridate, stringr, glue, lme4, lmerTest
+  tidyverse, lubridate, stringr, glue, lme4, lmerTest, 
+  multcomp
 )
 source("../code/get_label.R")
 source("../code/visualise_ci.R")
@@ -28,7 +29,7 @@ source("../code/get_cov.R")
 # Read in clean data
 
 ```{r}
-TSH_long  <- read_rds("../data/20190712-02_convert_long.rds")
+TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
 ```
 
 
@@ -49,6 +50,16 @@ TSH_long  <-
 ```{r}
 TSH_long <- 
   TSH_long %>% filter(!is.na(Sig))
+```
+
+Convert Thyroid test to factor
+
+```{r}
+TSH_long  <- 
+  TSH_long %>% 
+  mutate(
+    Thyroid_test = factor(Thyroid_test)
+  )
 ```
 
 
@@ -100,6 +111,21 @@ summary(tsh_glmer)
 
 From this - look at fixed effect output. We have that TSH has a signicantly smaller probability of significance compared to T4. T3 and T4 are not significantly different. 
 
+### Pairwise comparisons
+
+```{r}
+summary(glht(tsh_glmer, linfct = mcp(Thyroid_test = "Tukey")))
+```
+
+So significant difference between
+
+- TSH and Free T4, and 
+- TSH and T3.
+
+
+### Notes
+
+So we seem to have a lot of problems getting the RI to fit. May be able to tinker and improve. Looking at the various possible covariates we find that some of them increase the prediction of the probability of significance - system and number of subject. This is based on BIC. Number of covariates does not seem to improve the model. 
 
 ## Four thyroid tests
 
@@ -109,24 +135,47 @@ Will remove single T3
 TSH_long %>% count(Thyroid_test_4)
 ```
 
-# HERE
+### Random effects
 
 ```{r}
-tsh_glmer  <- glmer(Sig ~ Thyroid_test_4 + (1 | Paper), data = TSH_long, family = binomial)
-tsh_glm  <- glm(Sig ~ Thyroid_test_4, data = TSH_long, family = binomial)
+tsh_glmer  <- glmer(Sig ~ Thyroid_test_4 + (1 | Paper), 
+                    data = TSH_long, family = binomial)
+tsh_glm  <- glm(Sig ~ Thyroid_test_4, 
+                data = TSH_long, family = binomial)
 anova(tsh_glmer, tsh_glm)
-tsh_glmer_null  <- glmer(Sig ~ 1 + (1 | Paper), data = TSH_long, family = binomial)
+```
+
+So we need a random intercept. 
+
+### Fixed effects
+
+```{r}
+tsh_glmer_null  <- glmer(Sig ~ 1 + (1 | Paper), 
+                         data = TSH_long, family = binomial)
 anova(tsh_glmer, tsh_glmer_null)
+```
+
+So the treatments are significant. 
+
+```{r}
 summary(tsh_glmer)
 ```
 
+### Pairwise comparisons
 
 ```{r}
-pacman::p_load(multcomp)
 summary(glht(tsh_glmer, linfct = mcp(Thyroid_test_4 = "Tukey")))
 ```
 
+So significant difference between
+
+- TSH and Free T4, 
+- TSH and Free T3, and 
+- TSH and Total T3. 
+
 ## Try adding in other covariates. 
+
+For these, we keep thyroid test and try adding in the given covariate, also try upto two-way interaction. 
 
 ### System
 
@@ -135,12 +184,17 @@ system_models  <- get_cov("system")
 system_models %>% arrange(BIC) %>% knitr::kable()
 ```
 
+Best model (BIC) is thyroid test + random intercept. 
+
+
 ### N of subjects
 
 ```{r, cache=TRUE}
 N_models  <- get_cov("N_bin")
 N_models %>% arrange(BIC) %>% knitr::kable()
 ```
+
+Best model (BIC) is thyroid test + random intercept. 
 
 ### Number of covariates
 
@@ -149,10 +203,23 @@ n_cov_models  <- get_cov("n_cov")
 n_cov_models %>% arrange(BIC) %>% knitr::kable()
 ```
 
+Best model (BIC) is thyroid test + random intercept. 
 
-So we seem to have a lot of problems getting the RI to fit. May be able to tinker and improve. Looking at the various possible covariates we find that some of them increase the prediction of the probability of significance - system and number of subject. This is based on BIC. Number of covariates does not seem to improve the model. 
 
 # Model to take into account cohorts
+
+## Background
+
+We have added a cohort based on sample size within paper
+
+```{r}
+TSH_long %>% 
+  dplyr::select(
+  Paper, N, cohort
+)
+```
+
+So we have cohort nested within paper. 
 
 Looked at the lme4 paper
 
@@ -173,6 +240,8 @@ Looks like we want
 (1 | paper/cohort)
 ```
 
+## Fit models
+
 ```{r}
 tsh_glmer_M_paperRI  <- glmer(Sig ~ Thyroid_test + (1 | Paper), 
                               data = TSH_long, family = binomial)
@@ -182,6 +251,7 @@ tsh_glmer_M_no_test  <- glmer(Sig ~ 1 + (1 | Paper / cohort),
                               data = TSH_long, family = binomial)
 ```
 
+## Random terms
 
 First test for whether need cohort RI:
 
@@ -191,7 +261,9 @@ anova(tsh_glmer_M_paperRI, tsh_glmer_M_paper_cohort_RI)
 
 Small p-value so looks like we need cohort and paper RI. 
 
-No test for significant effect of test
+## Fixed effects
+
+Now test for significant effect of test
 
 ```{r}
 anova(tsh_glmer_M_paper_cohort_RI, tsh_glmer_M_no_test)
@@ -199,6 +271,7 @@ anova(tsh_glmer_M_paper_cohort_RI, tsh_glmer_M_no_test)
 
 So still significant effect of type of test. 
 
+## Final model
 Look at effect of test. 
 
 ```{r}
@@ -206,6 +279,14 @@ summary(tsh_glmer_M_paper_cohort_RI)
 ```
 
 As before probability of significance is significantly lower than FT4 and T3. 
+
+## Pairwise comparisons
+
+```{r}
+summary(glht(tsh_glmer_M_paper_cohort_RI, linfct = mcp(Thyroid_test = "Tukey")))
+```
+
+## Assumptions
 
 ```{r}
 plot(tsh_glmer_M_paper_cohort_RI)
@@ -221,9 +302,45 @@ TSH_long %>%
   knitr::kable()
 ```
 
+
 Need to talk to NB about which to keep. 
 
+Decided that only keep those with number of obs greater than 10. 
+
+```{r}
+TSH_long <- 
+  TSH_long %>% 
+  mutate(
+    style = fct_lump_min(CvQ, min = 10)
+  )
+TSH_long %>% 
+  count(CvQ, style) %>% 
+  knitr::kable()
+```
+
+
+## Fit all models
+
+```{r}
+tsh_glmer_M_paperRI  <- glmer(Sig ~ Thyroid_test + (1 | Paper), 
+                              data = TSH_long, family = binomial)
+tsh_glmer_M_paper_style_RI  <- glmer(Sig ~ Thyroid_test + (1 | Paper / style), 
+                                      data = TSH_long, family = binomial)
+tsh_glmer_M_no_test  <- glmer(Sig ~ 1 + (1 | Paper / style), 
+                              data = TSH_long, family = binomial)
+```
+
+## Random terms
+
+```{r}
+anova(tsh_glmer_M_paperRI, tsh_glmer_M_paper_style_RI)
+```
+
+No significant effect of style. 
+
 # Model to take into account sophistication
+
+## Check and clean
 
 ```{r}
 TSH_long %>% 
@@ -250,6 +367,8 @@ tsh_glmer_M_no_test  <- glmer(Sig ~ 1 + (1 | Paper / cohort),
                               data = TSH_long_noNA, family = binomial)
 ```
 
+## Random effects
+
 First test for whether need sophistication RI:
 
 ```{r}
@@ -258,35 +377,105 @@ anova(tsh_glmer_M_paperRI, tsh_glmer_M_paper_soph_RI)
 
 Not significant so not needed. 
 
-
-
-
-
 # Look at selected systems
-
-```{r}
-TSH_long <- 
-  TSH_long %>% 
-  mutate(high_low = case_when(
-    str_detect(Condition, "AF") ~ "high", 
-    str_detect(Condition, "low bone density") ~ "high", 
-    system == "cancer" ~ "high", 
-    str_detect(Condition, "fatty liver") ~ "low", 
-    system == "metabolic" ~ "low", 
-    TRUE ~ "neither"
-  ))
-```
-
-
-```{r}
-visualise_ci(TSH_long, high_low)
-```
 
 ```{r}
 high_low_models  <- get_cov("high_low")
 ```
 
+To little data to fit. 
+
+# Apply Devil's Advocate
+
+## Low models
+
 ```{r}
-high_low_models %>% arrange(BIC) %>% knitr::kable()
+TSH_long_low  <- 
+  TSH_long %>% 
+  filter(low_selected == TRUE)
 ```
+
+### Fit models
+
+```{r}
+M1  <- glmer(Sig ~ Thyroid_test + (1 | Paper), 
+             data = TSH_long_low, family = binomial)
+M2  <- glm(Sig ~ Thyroid_test, 
+             data = TSH_long_low, family = binomial)
+M3  <- glm(Sig ~ 1, 
+             data = TSH_long_low, family = binomial)
+```
+
+### Check RI
+
+```{r}
+anova(M1, M2)
+```
+
+Random intercept not needed. 
+
+### Thyroid test
+
+```{r}
+anova(M2, M3, test = "LRT")
+```
+
+Still significant effect of test
+
+### Final model
+
+```{r}
+summary(M2)
+summary(glht(M2, linfct = mcp(Thyroid_test = "Tukey")))
+```
+
+So significant difference between TSH and Free T4
+
+## High models
+
+```{r}
+TSH_long_high  <- 
+  TSH_long %>% 
+  filter(high_selected == TRUE)
+```
+
+### Fit models
+
+```{r}
+M1  <- glmer(Sig ~ Thyroid_test + (1 | Paper), 
+             data = TSH_long_high, family = binomial)
+M2  <- glm(Sig ~ Thyroid_test, 
+             data = TSH_long_high, family = binomial)
+M3  <- glm(Sig ~ 1, 
+             data = TSH_long_high, family = binomial)
+```
+
+### Check RI
+
+```{r}
+anova(M1, M2)
+```
+
+Random intercept needed. 
+
+### Thyroid test
+
+```{r}
+anova(M1, M3)
+```
+
+Still significant effect of test
+
+### Final model
+
+```{r}
+summary(M1)
+summary(glht(M1, linfct = mcp(Thyroid_test = "Tukey")))
+```
+
+So significant difference between 
+
+- T3 and Free T4, and 
+- TSH and Free T4. 
+
 

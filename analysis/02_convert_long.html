@@ -407,32 +407,33 @@ $(document).ready(function () {
 
 <div id="read-in-clean-data" class="section level1">
 <h1><span class="header-section-number">1</span> Read in clean data</h1>
-<pre class="r"><code>TSH  &lt;- read_rds(&quot;../data/20190712-01_cleaning-data.rds&quot;)
+<pre class="r"><code>TSH  &lt;- read_rds(&quot;../data/20190716-01_cleaning-data.rds&quot;)
 TSH</code></pre>
-<pre><code>## # A tibble: 462 x 43
-## # Groups:   Paper [35]
-##    Paper CvQ   Condition FT4_N FT4_method FT4_Sig FT4_Sophisticat… FT4_cov
-##    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;   &lt;chr&gt;            &lt;chr&gt;  
-##  1 Capp… Cont… AF         2673 Cox PH     Y       Medium           Age, s…
-##  2 Capp… Cont… AF         2673 Cox PH     Y       High             Age, s…
-##  3 Capp… Cont… CHD        2215 Cox PH     N       Medium           Age, s…
-##  4 Capp… Cont… CHD        2215 Cox PH     N       High             Age, s…
-##  5 Capp… Cont… Incident…  2706 Cox PH     Y       Medium           Age, s…
-##  6 Capp… Cont… Incident…  2706 Cox PH     Y       High             Age, s…
-##  7 Capp… Cont… Composit…  2073 Cox PH     Y       Medium           Age, s…
-##  8 Capp… Cont… Composit…  2073 Cox PH     Y       High             Age, s…
-##  9 Capp… Cont… Hip Frac…  2803 Cox PH     N       Medium           Age, a…
-## 10 Capp… Cont… Hip Frac…  2803 Cox PH     N       High             Age, a…
-## # … with 452 more rows, and 35 more variables: TSH_N &lt;dbl&gt;,
-## #   TSH_method &lt;chr&gt;, TSH_Sig &lt;chr&gt;, TSH_Sophistication &lt;chr&gt;,
-## #   TSH_cov &lt;chr&gt;, T3_N &lt;dbl&gt;, T3_method &lt;chr&gt;, T3_Sig &lt;chr&gt;,
-## #   T3_Sophistication &lt;chr&gt;, T3_cov &lt;chr&gt;, T3_total &lt;chr&gt;, ID &lt;int&gt;,
-## #   system &lt;chr&gt;, FT4_inferred &lt;lgl&gt;, FT4_pv &lt;dbl&gt;, FT4_bounded &lt;lgl&gt;,
-## #   FT4_OR &lt;dbl&gt;, FT4_ORCI &lt;chr&gt;, FT4_count &lt;chr&gt;, FT4_countCI &lt;chr&gt;,
-## #   TSH_inferred &lt;lgl&gt;, TSH_pv &lt;dbl&gt;, TSH_bounded &lt;lgl&gt;, TSH_OR &lt;dbl&gt;,
-## #   TSH_ORCI &lt;chr&gt;, TSH_count &lt;chr&gt;, TSH_countCI &lt;chr&gt;, T3_inferred &lt;lgl&gt;,
-## #   T3_pv &lt;dbl&gt;, T3_bounded &lt;lgl&gt;, T3_OR &lt;dbl&gt;, T3_ORCI &lt;chr&gt;,
-## #   T3_count &lt;chr&gt;, T3_countCI &lt;chr&gt;, cohort &lt;chr&gt;</code></pre>
+<pre><code>## # A tibble: 462 x 46
+## # Groups:   Paper, cohort [102]
+##    `hyper/hypo` Paper CvQ   Condition FT4_N FT4_method FT4_Sig
+##    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;  
+##  1 hyper        Capp… Cont… AF         2673 Cox PH     Y      
+##  2 &lt;NA&gt;         Capp… Cont… AF         2673 Cox PH     Y      
+##  3 &lt;NA&gt;         Capp… Cont… CHD        2215 Cox PH     N      
+##  4 &lt;NA&gt;         Capp… Cont… CHD        2215 Cox PH     N      
+##  5 &lt;NA&gt;         Capp… Cont… Incident…  2706 Cox PH     Y      
+##  6 &lt;NA&gt;         Capp… Cont… Incident…  2706 Cox PH     Y      
+##  7 &lt;NA&gt;         Capp… Cont… Composit…  2073 Cox PH     Y      
+##  8 &lt;NA&gt;         Capp… Cont… Composit…  2073 Cox PH     Y      
+##  9 &lt;NA&gt;         Capp… Cont… Hip Frac…  2803 Cox PH     N      
+## 10 &lt;NA&gt;         Capp… Cont… Hip Frac…  2803 Cox PH     N      
+## # … with 452 more rows, and 39 more variables: FT4_Sophistication &lt;chr&gt;,
+## #   FT4_cov &lt;chr&gt;, TSH_N &lt;dbl&gt;, TSH_method &lt;chr&gt;, TSH_Sig &lt;chr&gt;,
+## #   TSH_Sophistication &lt;chr&gt;, TSH_cov &lt;chr&gt;, T3_N &lt;dbl&gt;, T3_method &lt;chr&gt;,
+## #   T3_Sig &lt;chr&gt;, T3_Sophistication &lt;chr&gt;, T3_cov &lt;chr&gt;, T3_total &lt;chr&gt;,
+## #   ID &lt;int&gt;, system &lt;chr&gt;, FT4_inferred &lt;lgl&gt;, FT4_pv &lt;dbl&gt;,
+## #   FT4_bounded &lt;lgl&gt;, FT4_OR &lt;dbl&gt;, FT4_ORCI &lt;chr&gt;, FT4_count &lt;chr&gt;,
+## #   FT4_countCI &lt;chr&gt;, TSH_inferred &lt;lgl&gt;, TSH_pv &lt;dbl&gt;,
+## #   TSH_bounded &lt;lgl&gt;, TSH_OR &lt;dbl&gt;, TSH_ORCI &lt;chr&gt;, TSH_count &lt;chr&gt;,
+## #   TSH_countCI &lt;chr&gt;, T3_inferred &lt;lgl&gt;, T3_pv &lt;dbl&gt;, T3_bounded &lt;lgl&gt;,
+## #   T3_OR &lt;dbl&gt;, T3_ORCI &lt;chr&gt;, T3_count &lt;chr&gt;, T3_countCI &lt;chr&gt;,
+## #   cohort &lt;chr&gt;, low_selected &lt;lgl&gt;, high_selected &lt;lgl&gt;</code></pre>
 </div>
 <div id="add-id" class="section level1">
 <h1><span class="header-section-number">2</span> Add ID</h1>
@@ -442,51 +443,52 @@ TSH</code></pre>
 <h1><span class="header-section-number">3</span> Convert to long form</h1>
 <p>First take the the significance so row for each significance result. The key measure is made up of two parts - thanks NB for listening - this means that we can split into measure and T4 form</p>
 <pre class="r"><code>TSH</code></pre>
-<pre><code>## # A tibble: 462 x 43
-## # Groups:   Paper [35]
-##    Paper CvQ   Condition FT4_N FT4_method FT4_Sig FT4_Sophisticat… FT4_cov
-##    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;   &lt;chr&gt;            &lt;chr&gt;  
-##  1 Capp… Cont… AF         2673 Cox PH     Y       Medium           Age, s…
-##  2 Capp… Cont… AF         2673 Cox PH     Y       High             Age, s…
-##  3 Capp… Cont… CHD        2215 Cox PH     N       Medium           Age, s…
-##  4 Capp… Cont… CHD        2215 Cox PH     N       High             Age, s…
-##  5 Capp… Cont… Incident…  2706 Cox PH     Y       Medium           Age, s…
-##  6 Capp… Cont… Incident…  2706 Cox PH     Y       High             Age, s…
-##  7 Capp… Cont… Composit…  2073 Cox PH     Y       Medium           Age, s…
-##  8 Capp… Cont… Composit…  2073 Cox PH     Y       High             Age, s…
-##  9 Capp… Cont… Hip Frac…  2803 Cox PH     N       Medium           Age, a…
-## 10 Capp… Cont… Hip Frac…  2803 Cox PH     N       High             Age, a…
-## # … with 452 more rows, and 35 more variables: TSH_N &lt;dbl&gt;,
-## #   TSH_method &lt;chr&gt;, TSH_Sig &lt;chr&gt;, TSH_Sophistication &lt;chr&gt;,
-## #   TSH_cov &lt;chr&gt;, T3_N &lt;dbl&gt;, T3_method &lt;chr&gt;, T3_Sig &lt;chr&gt;,
-## #   T3_Sophistication &lt;chr&gt;, T3_cov &lt;chr&gt;, T3_total &lt;chr&gt;, ID &lt;int&gt;,
-## #   system &lt;chr&gt;, FT4_inferred &lt;lgl&gt;, FT4_pv &lt;dbl&gt;, FT4_bounded &lt;lgl&gt;,
-## #   FT4_OR &lt;dbl&gt;, FT4_ORCI &lt;chr&gt;, FT4_count &lt;chr&gt;, FT4_countCI &lt;chr&gt;,
-## #   TSH_inferred &lt;lgl&gt;, TSH_pv &lt;dbl&gt;, TSH_bounded &lt;lgl&gt;, TSH_OR &lt;dbl&gt;,
-## #   TSH_ORCI &lt;chr&gt;, TSH_count &lt;chr&gt;, TSH_countCI &lt;chr&gt;, T3_inferred &lt;lgl&gt;,
-## #   T3_pv &lt;dbl&gt;, T3_bounded &lt;lgl&gt;, T3_OR &lt;dbl&gt;, T3_ORCI &lt;chr&gt;,
-## #   T3_count &lt;chr&gt;, T3_countCI &lt;chr&gt;, cohort &lt;chr&gt;</code></pre>
-<pre class="r"><code>TSH %&gt;% select(dplyr::matches(&quot;FT4|TSH|T3&quot;))</code></pre>
-<pre><code>## Adding missing grouping variables: `Paper`</code></pre>
-<pre><code>## # A tibble: 462 x 38
-## # Groups:   Paper [35]
-##    Paper FT4_N FT4_method FT4_Sig FT4_Sophisticat… FT4_cov TSH_N TSH_method
-##    &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;   &lt;chr&gt;            &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;     
-##  1 Capp…  2673 Cox PH     Y       Medium           Age, s…  2673 Cox PH    
-##  2 Capp…  2673 Cox PH     Y       High             Age, s…  2673 Cox PH    
-##  3 Capp…  2215 Cox PH     N       Medium           Age, s…  2215 Cox PH    
-##  4 Capp…  2215 Cox PH     N       High             Age, s…  2215 Cox PH    
-##  5 Capp…  2706 Cox PH     Y       Medium           Age, s…  2706 Cox PH    
-##  6 Capp…  2706 Cox PH     Y       High             Age, s…  2706 Cox PH    
-##  7 Capp…  2073 Cox PH     Y       Medium           Age, s…  2073 Cox PH    
-##  8 Capp…  2073 Cox PH     Y       High             Age, s…  2073 Cox PH    
-##  9 Capp…  2803 Cox PH     N       Medium           Age, a…  2803 Cox PH    
-## 10 Capp…  2803 Cox PH     N       High             Age, a…  2803 Cox PH    
-## # … with 452 more rows, and 30 more variables: TSH_Sig &lt;chr&gt;,
+<pre><code>## # A tibble: 462 x 46
+## # Groups:   Paper, cohort [102]
+##    `hyper/hypo` Paper CvQ   Condition FT4_N FT4_method FT4_Sig
+##    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;  
+##  1 hyper        Capp… Cont… AF         2673 Cox PH     Y      
+##  2 &lt;NA&gt;         Capp… Cont… AF         2673 Cox PH     Y      
+##  3 &lt;NA&gt;         Capp… Cont… CHD        2215 Cox PH     N      
+##  4 &lt;NA&gt;         Capp… Cont… CHD        2215 Cox PH     N      
+##  5 &lt;NA&gt;         Capp… Cont… Incident…  2706 Cox PH     Y      
+##  6 &lt;NA&gt;         Capp… Cont… Incident…  2706 Cox PH     Y      
+##  7 &lt;NA&gt;         Capp… Cont… Composit…  2073 Cox PH     Y      
+##  8 &lt;NA&gt;         Capp… Cont… Composit…  2073 Cox PH     Y      
+##  9 &lt;NA&gt;         Capp… Cont… Hip Frac…  2803 Cox PH     N      
+## 10 &lt;NA&gt;         Capp… Cont… Hip Frac…  2803 Cox PH     N      
+## # … with 452 more rows, and 39 more variables: FT4_Sophistication &lt;chr&gt;,
+## #   FT4_cov &lt;chr&gt;, TSH_N &lt;dbl&gt;, TSH_method &lt;chr&gt;, TSH_Sig &lt;chr&gt;,
 ## #   TSH_Sophistication &lt;chr&gt;, TSH_cov &lt;chr&gt;, T3_N &lt;dbl&gt;, T3_method &lt;chr&gt;,
 ## #   T3_Sig &lt;chr&gt;, T3_Sophistication &lt;chr&gt;, T3_cov &lt;chr&gt;, T3_total &lt;chr&gt;,
-## #   FT4_inferred &lt;lgl&gt;, FT4_pv &lt;dbl&gt;, FT4_bounded &lt;lgl&gt;, FT4_OR &lt;dbl&gt;,
-## #   FT4_ORCI &lt;chr&gt;, FT4_count &lt;chr&gt;, FT4_countCI &lt;chr&gt;,
+## #   ID &lt;int&gt;, system &lt;chr&gt;, FT4_inferred &lt;lgl&gt;, FT4_pv &lt;dbl&gt;,
+## #   FT4_bounded &lt;lgl&gt;, FT4_OR &lt;dbl&gt;, FT4_ORCI &lt;chr&gt;, FT4_count &lt;chr&gt;,
+## #   FT4_countCI &lt;chr&gt;, TSH_inferred &lt;lgl&gt;, TSH_pv &lt;dbl&gt;,
+## #   TSH_bounded &lt;lgl&gt;, TSH_OR &lt;dbl&gt;, TSH_ORCI &lt;chr&gt;, TSH_count &lt;chr&gt;,
+## #   TSH_countCI &lt;chr&gt;, T3_inferred &lt;lgl&gt;, T3_pv &lt;dbl&gt;, T3_bounded &lt;lgl&gt;,
+## #   T3_OR &lt;dbl&gt;, T3_ORCI &lt;chr&gt;, T3_count &lt;chr&gt;, T3_countCI &lt;chr&gt;,
+## #   cohort &lt;chr&gt;, low_selected &lt;lgl&gt;, high_selected &lt;lgl&gt;</code></pre>
+<pre class="r"><code>TSH %&gt;% dplyr::select(dplyr::matches(&quot;FT4|TSH|T3&quot;))</code></pre>
+<pre><code>## Adding missing grouping variables: `Paper`, `cohort`</code></pre>
+<pre><code>## # A tibble: 462 x 39
+## # Groups:   Paper, cohort [102]
+##    Paper cohort FT4_N FT4_method FT4_Sig FT4_Sophisticat… FT4_cov TSH_N
+##    &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;   &lt;chr&gt;            &lt;chr&gt;   &lt;dbl&gt;
+##  1 Capp… C4      2673 Cox PH     Y       Medium           Age, s…  2673
+##  2 Capp… C4      2673 Cox PH     Y       High             Age, s…  2673
+##  3 Capp… C3      2215 Cox PH     N       Medium           Age, s…  2215
+##  4 Capp… C3      2215 Cox PH     N       High             Age, s…  2215
+##  5 Capp… C5      2706 Cox PH     Y       Medium           Age, s…  2706
+##  6 Capp… C5      2706 Cox PH     Y       High             Age, s…  2706
+##  7 Capp… C2      2073 Cox PH     Y       Medium           Age, s…  2073
+##  8 Capp… C2      2073 Cox PH     Y       High             Age, s…  2073
+##  9 Capp… C6      2803 Cox PH     N       Medium           Age, a…  2803
+## 10 Capp… C6      2803 Cox PH     N       High             Age, a…  2803
+## # … with 452 more rows, and 31 more variables: TSH_method &lt;chr&gt;,
+## #   TSH_Sig &lt;chr&gt;, TSH_Sophistication &lt;chr&gt;, TSH_cov &lt;chr&gt;, T3_N &lt;dbl&gt;,
+## #   T3_method &lt;chr&gt;, T3_Sig &lt;chr&gt;, T3_Sophistication &lt;chr&gt;, T3_cov &lt;chr&gt;,
+## #   T3_total &lt;chr&gt;, FT4_inferred &lt;lgl&gt;, FT4_pv &lt;dbl&gt;, FT4_bounded &lt;lgl&gt;,
+## #   FT4_OR &lt;dbl&gt;, FT4_ORCI &lt;chr&gt;, FT4_count &lt;chr&gt;, FT4_countCI &lt;chr&gt;,
 ## #   TSH_inferred &lt;lgl&gt;, TSH_pv &lt;dbl&gt;, TSH_bounded &lt;lgl&gt;, TSH_OR &lt;dbl&gt;,
 ## #   TSH_ORCI &lt;chr&gt;, TSH_count &lt;chr&gt;, TSH_countCI &lt;chr&gt;, T3_inferred &lt;lgl&gt;,
 ## #   T3_pv &lt;dbl&gt;, T3_bounded &lt;lgl&gt;, T3_OR &lt;dbl&gt;, T3_ORCI &lt;chr&gt;,
@@ -515,20 +517,21 @@ spec</code></pre>
   TSH %&gt;% 
   pivot_longer(spec = spec)
 TSH_long</code></pre>
-<pre><code>## # A tibble: 1,386 x 20
-##    Paper CvQ   Condition    ID system cohort Thyroid_test     N method
-##    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;     &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt; 
-##  1 Capp… Cont… AF            1 cardi… C4     FT4           2673 Cox PH
-##  2 Capp… Cont… AF            1 cardi… C4     TSH           2673 Cox PH
-##  3 Capp… Cont… AF            1 cardi… C4     T3            2673 Cox PH
-##  4 Capp… Cont… AF            2 cardi… C4     FT4           2673 Cox PH
-##  5 Capp… Cont… AF            2 cardi… C4     TSH           2673 Cox PH
-##  6 Capp… Cont… AF            2 cardi… C4     T3            2673 Cox PH
-##  7 Capp… Cont… CHD           3 cardi… C3     FT4           2215 Cox PH
-##  8 Capp… Cont… CHD           3 cardi… C3     TSH           2215 Cox PH
-##  9 Capp… Cont… CHD           3 cardi… C3     T3            2215 Cox PH
-## 10 Capp… Cont… CHD           4 cardi… C3     FT4           2215 Cox PH
-## # … with 1,376 more rows, and 11 more variables: Sig &lt;chr&gt;,
+<pre><code>## # A tibble: 1,386 x 23
+##    `hyper/hypo` Paper CvQ   Condition    ID system cohort low_selected
+##    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;     &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;lgl&gt;       
+##  1 hyper        Capp… Cont… AF            1 cardi… C4     FALSE       
+##  2 hyper        Capp… Cont… AF            1 cardi… C4     FALSE       
+##  3 hyper        Capp… Cont… AF            1 cardi… C4     FALSE       
+##  4 &lt;NA&gt;         Capp… Cont… AF            2 cardi… C4     FALSE       
+##  5 &lt;NA&gt;         Capp… Cont… AF            2 cardi… C4     FALSE       
+##  6 &lt;NA&gt;         Capp… Cont… AF            2 cardi… C4     FALSE       
+##  7 &lt;NA&gt;         Capp… Cont… CHD           3 cardi… C3     FALSE       
+##  8 &lt;NA&gt;         Capp… Cont… CHD           3 cardi… C3     FALSE       
+##  9 &lt;NA&gt;         Capp… Cont… CHD           3 cardi… C3     FALSE       
+## 10 &lt;NA&gt;         Capp… Cont… CHD           4 cardi… C3     FALSE       
+## # … with 1,376 more rows, and 15 more variables: high_selected &lt;lgl&gt;,
+## #   Thyroid_test &lt;chr&gt;, N &lt;dbl&gt;, method &lt;chr&gt;, Sig &lt;chr&gt;,
 ## #   Sophistication &lt;chr&gt;, cov &lt;chr&gt;, total &lt;chr&gt;, inferred &lt;lgl&gt;,
 ## #   pv &lt;dbl&gt;, bounded &lt;lgl&gt;, OR &lt;dbl&gt;, ORCI &lt;chr&gt;, count &lt;chr&gt;,
 ## #   countCI &lt;chr&gt;</code></pre>
@@ -544,7 +547,17 @@ TSH_long</code></pre>
       Thyroid_test, 
       paste0(Thyroid_test, &quot;_&quot;,total)
     )
-  )</code></pre>
+  )
+TSH_long %&gt;% 
+  count(Thyroid_test_4)</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   Thyroid_test_4     n
+##   &lt;chr&gt;          &lt;int&gt;
+## 1 FT4              462
+## 2 T3               288
+## 3 T3_Free          109
+## 4 T3_Total          65
+## 5 TSH              462</code></pre>
 </div>
 <div id="add-in-high-low-classification-of-systems" class="section level1">
 <h1><span class="header-section-number">5</span> Add in high low classification of systems</h1>
@@ -589,20 +602,41 @@ table(TSH_long$n_cov)</code></pre>
   TSH_long %&gt;% 
   mutate(N_bin = cut_number(N, 5))
 TSH_long %&gt;% filter(is.na(N_bin))</code></pre>
-<pre><code>## # A tibble: 292 x 24
-##    Paper CvQ   Condition    ID system cohort Thyroid_test     N method
-##    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;     &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt; 
-##  1 Capp… Quar… AF           15 cardi… C4     T3              NA &lt;NA&gt;  
-##  2 Capp… Quar… CHD          16 cardi… C3     T3              NA &lt;NA&gt;  
-##  3 Capp… Quar… Heart fa…    17 cardi… C5     T3              NA &lt;NA&gt;  
-##  4 Capp… Quar… mortality    18 morta… C7     T3              NA &lt;NA&gt;  
-##  5 Capp… Quar… Hip Frac…    19 ortho… C6     T3              NA &lt;NA&gt;  
-##  6 Capp… Quar… Dementia     20 neuro… C1     T3              NA &lt;NA&gt;  
-##  7 Chak… Cont… AF preva…    21 cardi… C2     T3              NA &lt;NA&gt;  
-##  8 Chak… Cont… AF preva…    22 cardi… C2     T3              NA &lt;NA&gt;  
-##  9 Chak… Cont… AF preva…    23 mixed  C1     T3              NA &lt;NA&gt;  
-## 10 Chak… Cont… AF preva…    24 mixed  C1     TSH             NA log r…
-## # … with 282 more rows, and 15 more variables: Sig &lt;chr&gt;,
+<pre><code>## # A tibble: 292 x 27
+##    `hyper/hypo` Paper CvQ   Condition    ID system cohort low_selected
+##    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;     &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;lgl&gt;       
+##  1 &lt;NA&gt;         Capp… Quar… AF           15 cardi… C4     FALSE       
+##  2 &lt;NA&gt;         Capp… Quar… CHD          16 cardi… C3     FALSE       
+##  3 &lt;NA&gt;         Capp… Quar… Heart fa…    17 cardi… C5     FALSE       
+##  4 &lt;NA&gt;         Capp… Quar… mortality    18 morta… C7     FALSE       
+##  5 &lt;NA&gt;         Capp… Quar… Hip Frac…    19 ortho… C6     FALSE       
+##  6 &lt;NA&gt;         Capp… Quar… Dementia     20 neuro… C1     FALSE       
+##  7 hyper        Chak… Cont… AF preva…    21 cardi… C2     TRUE        
+##  8 &lt;NA&gt;         Chak… Cont… AF preva…    22 cardi… C2     FALSE       
+##  9 &lt;NA&gt;         Chak… Cont… AF preva…    23 mixed  C1     TRUE        
+## 10 &lt;NA&gt;         Chak… Cont… AF preva…    24 mixed  C1     FALSE       
+## # … with 282 more rows, and 19 more variables: high_selected &lt;lgl&gt;,
+## #   Thyroid_test &lt;chr&gt;, N &lt;dbl&gt;, method &lt;chr&gt;, Sig &lt;chr&gt;,
+## #   Sophistication &lt;chr&gt;, cov &lt;chr&gt;, total &lt;chr&gt;, inferred &lt;lgl&gt;,
+## #   pv &lt;dbl&gt;, bounded &lt;lgl&gt;, OR &lt;dbl&gt;, ORCI &lt;chr&gt;, count &lt;chr&gt;,
+## #   countCI &lt;chr&gt;, Thyroid_test_4 &lt;chr&gt;, high_low &lt;chr&gt;, n_cov &lt;chr&gt;,
+## #   N_bin &lt;fct&gt;</code></pre>
+<pre class="r"><code>TSH_long</code></pre>
+<pre><code>## # A tibble: 1,386 x 27
+##    `hyper/hypo` Paper CvQ   Condition    ID system cohort low_selected
+##    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;     &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;lgl&gt;       
+##  1 hyper        Capp… Cont… AF            1 cardi… C4     FALSE       
+##  2 hyper        Capp… Cont… AF            1 cardi… C4     FALSE       
+##  3 hyper        Capp… Cont… AF            1 cardi… C4     FALSE       
+##  4 &lt;NA&gt;         Capp… Cont… AF            2 cardi… C4     FALSE       
+##  5 &lt;NA&gt;         Capp… Cont… AF            2 cardi… C4     FALSE       
+##  6 &lt;NA&gt;         Capp… Cont… AF            2 cardi… C4     FALSE       
+##  7 &lt;NA&gt;         Capp… Cont… CHD           3 cardi… C3     FALSE       
+##  8 &lt;NA&gt;         Capp… Cont… CHD           3 cardi… C3     FALSE       
+##  9 &lt;NA&gt;         Capp… Cont… CHD           3 cardi… C3     FALSE       
+## 10 &lt;NA&gt;         Capp… Cont… CHD           4 cardi… C3     FALSE       
+## # … with 1,376 more rows, and 19 more variables: high_selected &lt;lgl&gt;,
+## #   Thyroid_test &lt;chr&gt;, N &lt;dbl&gt;, method &lt;chr&gt;, Sig &lt;chr&gt;,
 ## #   Sophistication &lt;chr&gt;, cov &lt;chr&gt;, total &lt;chr&gt;, inferred &lt;lgl&gt;,
 ## #   pv &lt;dbl&gt;, bounded &lt;lgl&gt;, OR &lt;dbl&gt;, ORCI &lt;chr&gt;, count &lt;chr&gt;,
 ## #   countCI &lt;chr&gt;, Thyroid_test_4 &lt;chr&gt;, high_low &lt;chr&gt;, n_cov &lt;chr&gt;,

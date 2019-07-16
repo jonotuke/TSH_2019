@@ -27,6 +27,7 @@ source("../code/clean_n.R")
 source("../code/get_inferred.R")
 source("../code/clean_pv.R")
 source("../code/add_cohort.R")
+source("../code/get_DA.R")
 ```
 
 # Nigel's cleaning
@@ -50,7 +51,8 @@ Nigel did some cleaning of the original dataset as follows
 ```{r}
 # TSH  <- read_excel("../data/20190318_excel tsh_2019_data.xlsx")
 # TSH  <- read_excel("../raw data/20190519_excel tsh_2019_data.xlsx")
-TSH  <- read_excel("../raw data/20190708_excel tsh_2019_data.xlsx")
+# TSH  <- read_excel("../raw data/20190708_excel tsh_2019_data.xlsx")
+TSH  <- read_excel("../raw data/20190714_excel tsh2_2019_data.xlsx")
 TSH
 ```
 
@@ -552,6 +554,57 @@ TSH %>% ggplot(aes(cohort, FT4_N)) + geom_point() +
   facet_wrap(~Paper, scales = "free", ncol = 3)
 ```
 
+## Check hyper / hypo
+
+```{r}
+TSH %>% 
+  count(`hyper/hypo`)
+```
+
+## Devil advocate sampling
+
+The idea is that within each paper / cohort, we will randomly select one small model, and one large model. 
+
+First we will get a randomly selected low model
+
+```{r}
+set.seed(2019)
+TSH  <- 
+  TSH %>% 
+  group_by(Paper, cohort) %>% 
+  mutate(low_selected = get_DA(FT4_Sophistication, type = "Low"))
+```
+
+
+Check that one per paper / cohort 
+
+```{r}
+TSH %>% 
+  filter(low_selected == TRUE) %>% 
+  count(Paper, cohort) %>% 
+  ungroup() %>% 
+  count(n)
+```
+
+Now add high model
+
+```{r}
+set.seed(2019)
+TSH  <- 
+  TSH %>% 
+  group_by(Paper, cohort) %>% 
+  mutate(high_selected = get_DA(FT4_Sophistication, type = "High"))
+```
+
+Check again
+
+```{r}
+TSH %>% 
+  filter(high_selected == TRUE) %>% 
+  count(Paper, cohort) %>% 
+  ungroup() %>% 
+  count(n)
+```
 
 # Save clean data
 

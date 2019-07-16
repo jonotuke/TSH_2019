@@ -27,7 +27,7 @@ source("../code/visualise_ci.R")
 # Read in clean data
 
 ```{r}
-TSH_long  <- read_rds("../data/20190712-02_convert_long.rds")
+TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
 ```
 
 # Visual comparison
@@ -35,6 +35,7 @@ TSH_long  <- read_rds("../data/20190712-02_convert_long.rds")
 ## Overall
 
 ```{r}
+TSH_long
 overall_ci  <- 
   TSH_long %>% 
   filter(!is.na(Sig)) %>% 
@@ -118,9 +119,10 @@ ggplot(overall_ci, aes( Thyroid_test_4, p, col = Thyroid_test_4)) +
 visualise_ci(TSH_long, high_low)
 ```
 
+## Hyper / hypo
+
 ```{r}
-TSH_long %>% 
-  filter(Thyroid_test == "T3", high_low == "high") %>% 
-  pull(Sig)
+TSH_long
+visualise_ci(TSH_long, `hyper/hypo`)
 ```
 
