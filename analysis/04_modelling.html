@@ -7,11 +7,12 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 <meta name="author" content="Jono Tuke" />
 
-<meta name="date" content="2019-07-25" />
+<meta name="date" content="2019-08-02" />
 
 <title>Modelling</title>
 
@@ -368,18 +369,6 @@ summary {
 }
 </style>
 
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
 <!-- code folding -->
 
 
@@ -401,7 +390,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Modelling</h1>
 <h4 class="author">Jono Tuke</h4>
-<h4 class="date">2019-07-25</h4>
+<h4 class="date">2019-08-02</h4>
 
 </div>
 
@@ -444,7 +433,7 @@ anova(tsh_glmer, tsh_glm)</code></pre>
 ## tsh_glm    3 1368.1 1383.1 -681.07   1362.1                             
 ## tsh_glmer  4 1284.0 1304.0 -637.99   1276.0 86.146      1  &lt; 2.2e-16 ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>Looks like need RI.</p>
 </div>
 <div id="fixed-effects" class="section level3">
@@ -460,7 +449,7 @@ anova(tsh_glmer, tsh_glmer_null)</code></pre>
 ## tsh_glmer_null  2 1418 1428 -707.01     1414                             
 ## tsh_glmer       4 1284 1304 -637.99     1276 138.03      2  &lt; 2.2e-16 ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>Looks like significant effect of test.</p>
 <p>Also check with BIC - smaller is better.</p>
 <pre class="r"><code>BIC(tsh_glmer_null, tsh_glm, tsh_glmer)</code></pre>
@@ -494,7 +483,7 @@ anova(tsh_glmer, tsh_glmer_null)</code></pre>
 ## Thyroid_testT3   -0.2229     0.2118  -1.052   0.2928    
 ## Thyroid_testTSH  -1.7172     0.1595 -10.769   &lt;2e-16 ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Correlation of Fixed Effects:
 ##             (Intr) Thy_T3
@@ -520,7 +509,7 @@ anova(tsh_glmer, tsh_glmer_null)</code></pre>
 ## TSH - FT4 == 0  -1.7172     0.1595 -10.769   &lt;1e-04 ***
 ## TSH - T3 == 0   -1.4943     0.2247  -6.649   &lt;1e-04 ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## (Adjusted p values reported -- single-step method)</code></pre>
 <p>So significant difference between</p>
 <ul>
@@ -559,7 +548,7 @@ anova(tsh_glmer, tsh_glm)</code></pre>
 ## tsh_glm    4 1346.9 1367.0 -669.47   1338.9                             
 ## tsh_glmer  5 1282.4 1307.4 -636.18   1272.4 66.578      1  3.364e-16 ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>So we need a random intercept.</p>
 </div>
 <div id="fixed-effects-1" class="section level3">
@@ -578,7 +567,7 @@ anova(tsh_glmer, tsh_glmer_null)</code></pre>
 ## tsh_glmer_null    
 ## tsh_glmer      ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>So the treatments are significant.</p>
 <pre class="r"><code>summary(tsh_glmer)</code></pre>
 <pre><code>## Generalized linear mixed model fit by maximum likelihood (Laplace
@@ -606,7 +595,7 @@ anova(tsh_glmer, tsh_glmer_null)</code></pre>
 ## Thyroid_test_4T3_Total   0.3182     0.3626   0.878   0.3802    
 ## Thyroid_test_4TSH       -1.6976     0.1585 -10.708   &lt;2e-16 ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Correlation of Fixed Effects:
 ##             (Intr) T__4T3_F T__4T3_T
@@ -628,14 +617,14 @@ anova(tsh_glmer, tsh_glmer_null)</code></pre>
 ## 
 ## Linear Hypotheses:
 ##                         Estimate Std. Error z value Pr(&gt;|z|)    
-## T3_Free - FT4 == 0       -0.4981     0.2579  -1.931    0.198    
+## T3_Free - FT4 == 0       -0.4981     0.2579  -1.931    0.197    
 ## T3_Total - FT4 == 0       0.3182     0.3626   0.878    0.803    
 ## TSH - FT4 == 0           -1.6976     0.1585 -10.708   &lt;0.001 ***
-## T3_Total - T3_Free == 0   0.8163     0.4333   1.884    0.217    
+## T3_Total - T3_Free == 0   0.8163     0.4333   1.884    0.216    
 ## TSH - T3_Free == 0       -1.1995     0.2732  -4.391   &lt;0.001 ***
 ## TSH - T3_Total == 0      -2.0158     0.3642  -5.534   &lt;0.001 ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## (Adjusted p values reported -- single-step method)</code></pre>
 <p>So significant difference between</p>
 <ul>
@@ -1004,7 +993,7 @@ tsh_glmer_M_no_test  &lt;- glmer(Sig ~ 1 + (1 | Paper / cohort),
 ## tsh_glmer_M_paperRI                              
 ## tsh_glmer_M_paper_cohort_RI      1  4.483e-08 ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>Small p-value so looks like we need cohort and paper RI.</p>
 </div>
 <div id="fixed-effects-2" class="section level2">
@@ -1022,7 +1011,7 @@ tsh_glmer_M_no_test  &lt;- glmer(Sig ~ 1 + (1 | Paper / cohort),
 ## tsh_glmer_M_no_test                              
 ## tsh_glmer_M_paper_cohort_RI      2  &lt; 2.2e-16 ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>So still significant effect of type of test.</p>
 </div>
 <div id="final-model" class="section level2">
@@ -1054,7 +1043,7 @@ tsh_glmer_M_no_test  &lt;- glmer(Sig ~ 1 + (1 | Paper / cohort),
 ## Thyroid_testT3   -0.2391     0.2173  -1.101   0.2711    
 ## Thyroid_testTSH  -1.8703     0.1701 -10.995   &lt;2e-16 ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Correlation of Fixed Effects:
 ##             (Intr) Thy_T3
@@ -1080,7 +1069,7 @@ tsh_glmer_M_no_test  &lt;- glmer(Sig ~ 1 + (1 | Paper / cohort),
 ## TSH - FT4 == 0  -1.8703     0.1701 -10.995   &lt;1e-04 ***
 ## TSH - T3 == 0   -1.6312     0.2330  -7.001   &lt;1e-04 ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## (Adjusted p values reported -- single-step method)</code></pre>
 </div>
 <div id="assumptions" class="section level2">
@@ -1291,7 +1280,7 @@ tsh_glmer_M_no_test  &lt;- glmer(Sig ~ 1 + (1 | Paper / cohort),
 ## tsh_glmer_M_paperRI                   
 ## tsh_glmer_M_paper_soph_RI      0.097 .
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>Not significant so not needed.</p>
 </div>
 </div>
@@ -1342,7 +1331,7 @@ M3  &lt;- glm(Sig ~ 1,
 ## 1        62     68.921                          
 ## 2        64     87.492 -2   -18.57 9.278e-05 ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>Still significant effect of test</p>
 </div>
 <div id="final-model-1" class="section level3">
@@ -1362,7 +1351,7 @@ M3  &lt;- glm(Sig ~ 1,
 ## Thyroid_testT3   -16.2127  1455.3976  -0.011 0.991112    
 ## Thyroid_testTSH   -2.3330     0.6128  -3.807 0.000141 ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
@@ -1386,7 +1375,7 @@ M3  &lt;- glm(Sig ~ 1,
 ## TSH - FT4 == 0   -2.3330     0.6128  -3.807 0.000281 ***
 ## TSH - T3 == 0    13.8797  1455.3976   0.010 0.999942    
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## (Adjusted p values reported -- single-step method)</code></pre>
 <p>So significant difference between TSH and Free T4</p>
 </div>
@@ -1416,7 +1405,7 @@ M3  &lt;- glm(Sig ~ 1,
 ## M2  3 104.823 112.007 -49.412   98.823                             
 ## M1  4  82.169  91.747 -37.084   74.169 24.654      1  6.859e-07 ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>Random intercept needed.</p>
 </div>
 <div id="thyroid-test-1" class="section level3">
@@ -1430,7 +1419,7 @@ M3  &lt;- glm(Sig ~ 1,
 ## M3  1 110.695 113.090 -54.348  108.695                             
 ## M1  4  82.169  91.747 -37.084   74.169 34.526      3  1.534e-07 ***
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>Still significant effect of test</p>
 </div>
 <div id="final-model-2" class="section level3">
@@ -1460,7 +1449,7 @@ M3  &lt;- glm(Sig ~ 1,
 ## Thyroid_testT3   -2.8944     1.2359  -2.342  0.01919 * 
 ## Thyroid_testTSH  -2.1927     0.8252  -2.657  0.00788 **
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## Correlation of Fixed Effects:
 ##             (Intr) Thy_T3
@@ -1482,7 +1471,7 @@ M3  &lt;- glm(Sig ~ 1,
 ## TSH - FT4 == 0  -2.1927     0.8252  -2.657   0.0207 *
 ## TSH - T3 == 0    0.7017     1.1786   0.595   0.8195  
 ## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## (Adjusted p values reported -- single-step method)</code></pre>
 <p>So significant difference between</p>
 <ul>
@@ -1510,6 +1499,23 @@ $(document).ready(function () {
 
 
 </script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
