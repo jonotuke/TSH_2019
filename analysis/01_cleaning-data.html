@@ -7,10 +7,12 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 <meta name="author" content="Jono Tuke" />
 
+<meta name="date" content="2019-08-02" />
 
 <title>Cleaning of the data</title>
 
@@ -367,18 +369,6 @@ summary {
 }
 </style>
 
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
 <!-- code folding -->
 
 
@@ -400,7 +390,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Cleaning of the data</h1>
 <h4 class="author">Jono Tuke</h4>
-<h4 class="date">21/03/2019</h4>
+<h4 class="date">2019-08-02</h4>
 
 </div>
 
@@ -434,15 +424,15 @@ TSH</code></pre>
 ##    `hyper/hypo` Paper `Continuous V q… `Condition and … FT4_N FT4_method
 ##    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt; &lt;chr&gt;     
 ##  1 hyper        Capp… Continuous       AF               2673  Cox PH    
-##  2 &lt;NA&gt;         Capp… Continuous       AF               2673  Cox PH    
-##  3 &lt;NA&gt;         Capp… Continuous       CHD              2215  Cox PH    
-##  4 &lt;NA&gt;         Capp… Continuous       CHD              2215  Cox PH    
-##  5 &lt;NA&gt;         Capp… Continuous       Incident Heart … 2706  Cox PH    
-##  6 &lt;NA&gt;         Capp… Continuous       Incident Heart … 2706  Cox PH    
-##  7 &lt;NA&gt;         Capp… Continuous       Composite measu… 2073  Cox PH    
-##  8 &lt;NA&gt;         Capp… Continuous       Composite measu… 2073  Cox PH    
-##  9 &lt;NA&gt;         Capp… Continuous       Hip Fracture     2803  Cox PH    
-## 10 &lt;NA&gt;         Capp… Continuous       Hip Fracture     2803  Cox PH    
+##  2 hyper        Capp… Continuous       AF               2673  Cox PH    
+##  3 hyper        Capp… Continuous       CHD              2215  Cox PH    
+##  4 hyper        Capp… Continuous       CHD              2215  Cox PH    
+##  5 hyper        Capp… Continuous       Incident Heart … 2706  Cox PH    
+##  6 hyper        Capp… Continuous       Incident Heart … 2706  Cox PH    
+##  7 hyper        Capp… Continuous       Composite measu… 2073  Cox PH    
+##  8 hyper        Capp… Continuous       Composite measu… 2073  Cox PH    
+##  9 hyper        Capp… Continuous       Hip Fracture     2803  Cox PH    
+## 10 hyper        Capp… Continuous       Hip Fracture     2803  Cox PH    
 ## # … with 496 more rows, and 17 more variables: FT4_Sig &lt;chr&gt;,
 ## #   FT4_PV &lt;chr&gt;, FT4_Sophistication &lt;chr&gt;, FT4_cov &lt;chr&gt;, TSH_N &lt;chr&gt;,
 ## #   TSH_method &lt;chr&gt;, TSH_Sig &lt;chr&gt;, TSH_PV &lt;chr&gt;,
@@ -463,15 +453,15 @@ TSH</code></pre>
 ##    `hyper/hypo` Paper `Continuous V q… `Condition and … FT4_N FT4_method
 ##    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt; &lt;chr&gt;     
 ##  1 hyper        Capp… Continuous       AF               2673  Cox PH    
-##  2 &lt;NA&gt;         Capp… Continuous       AF               2673  Cox PH    
-##  3 &lt;NA&gt;         Capp… Continuous       CHD              2215  Cox PH    
-##  4 &lt;NA&gt;         Capp… Continuous       CHD              2215  Cox PH    
-##  5 &lt;NA&gt;         Capp… Continuous       Incident Heart … 2706  Cox PH    
-##  6 &lt;NA&gt;         Capp… Continuous       Incident Heart … 2706  Cox PH    
-##  7 &lt;NA&gt;         Capp… Continuous       Composite measu… 2073  Cox PH    
-##  8 &lt;NA&gt;         Capp… Continuous       Composite measu… 2073  Cox PH    
-##  9 &lt;NA&gt;         Capp… Continuous       Hip Fracture     2803  Cox PH    
-## 10 &lt;NA&gt;         Capp… Continuous       Hip Fracture     2803  Cox PH    
+##  2 hyper        Capp… Continuous       AF               2673  Cox PH    
+##  3 hyper        Capp… Continuous       CHD              2215  Cox PH    
+##  4 hyper        Capp… Continuous       CHD              2215  Cox PH    
+##  5 hyper        Capp… Continuous       Incident Heart … 2706  Cox PH    
+##  6 hyper        Capp… Continuous       Incident Heart … 2706  Cox PH    
+##  7 hyper        Capp… Continuous       Composite measu… 2073  Cox PH    
+##  8 hyper        Capp… Continuous       Composite measu… 2073  Cox PH    
+##  9 hyper        Capp… Continuous       Hip Fracture     2803  Cox PH    
+## 10 hyper        Capp… Continuous       Hip Fracture     2803  Cox PH    
 ## # … with 452 more rows, and 17 more variables: FT4_Sig &lt;chr&gt;,
 ## #   FT4_PV &lt;chr&gt;, FT4_Sophistication &lt;chr&gt;, FT4_cov &lt;chr&gt;, TSH_N &lt;chr&gt;,
 ## #   TSH_method &lt;chr&gt;, TSH_Sig &lt;chr&gt;, TSH_PV &lt;chr&gt;,
@@ -1366,16 +1356,16 @@ expect_equal(clean_n(x), c(NA, 250, 22, 24, 33))</code></pre>
 <pre><code>## # A tibble: 31 x 2
 ##    FT4_method                       n
 ##    &lt;chr&gt;                        &lt;int&gt;
-##  1 &lt;NA&gt;                             3
-##  2 ?fixed effects                   6
-##  3 adjusted regression             12
-##  4 Anova/Tukey                      6
-##  5 Anova/Tukey/multiple log reg    13
-##  6 Anova/X sq                       4
-##  7 correlation analysis            24
-##  8 Cox PH                         120
-##  9 Cox PH logFT4                   10
-## 10 Cox PH/log reg                   6
+##  1 ?fixed effects                   6
+##  2 adjusted regression             12
+##  3 Anova/Tukey                      6
+##  4 Anova/Tukey/multiple log reg    13
+##  5 Anova/X sq                       4
+##  6 correlation analysis            24
+##  7 Cox PH                         120
+##  8 Cox PH logFT4                   10
+##  9 Cox PH/log reg                   6
+## 10 CoxPH                           22
 ## # … with 21 more rows</code></pre>
 <pre class="r"><code>clean_levels(TSH$FT4_method, check = TRUE)</code></pre>
 <table>
@@ -2428,10 +2418,10 @@ pv</code></pre>
 <pre><code>## # A tibble: 4 x 2
 ##   T3_Sig     n
 ##   &lt;chr&gt;  &lt;int&gt;
-## 1 &lt;NA&gt;     288
-## 2 N         83
-## 3 N*         3
-## 4 Y         88</code></pre>
+## 1 N         83
+## 2 N*         3
+## 3 Y         88
+## 4 &lt;NA&gt;     288</code></pre>
 <p>Convert not stated to NA</p>
 <pre class="r"><code>TSH$T3_Sig[TSH$T3_Sig == &quot;not stated&quot;]  &lt;- NA</code></pre>
 <pre class="r"><code>TSH %&gt;% 
@@ -2439,10 +2429,10 @@ pv</code></pre>
 <pre><code>## # A tibble: 4 x 2
 ##   T3_Sig     n
 ##   &lt;chr&gt;  &lt;int&gt;
-## 1 &lt;NA&gt;     288
-## 2 N         83
-## 3 N*         3
-## 4 Y         88</code></pre>
+## 1 N         83
+## 2 N*         3
+## 3 Y         88
+## 4 &lt;NA&gt;     288</code></pre>
 <pre class="r"><code>TSH  &lt;- 
   TSH %&gt;% 
   mutate(T3_inferred = get_inferred(T3_Sig))
@@ -2524,11 +2514,11 @@ pv</code></pre>
 <pre><code>## # A tibble: 5 x 2
 ##   T3_Sophistication     n
 ##   &lt;chr&gt;             &lt;int&gt;
-## 1 &lt;NA&gt;                283
-## 2 Crude                55
-## 3 High                 42
-## 4 Low                   5
-## 5 Medium               77</code></pre>
+## 1 Crude                55
+## 2 High                 42
+## 3 Low                   5
+## 4 Medium               77
+## 5 &lt;NA&gt;                283</code></pre>
 </div>
 <div id="total-t3" class="section level2">
 <h2><span class="header-section-number">3.25</span> Total T3</h2>
@@ -2536,9 +2526,9 @@ pv</code></pre>
 <pre><code>## # A tibble: 3 x 2
 ##   `T3 - Free or Total`     n
 ##   &lt;chr&gt;                &lt;int&gt;
-## 1 &lt;NA&gt;                   288
-## 2 Free                   109
-## 3 Total                   65</code></pre>
+## 1 Free                   109
+## 2 Total                   65
+## 3 &lt;NA&gt;                   288</code></pre>
 <p>Rename</p>
 <pre class="r"><code>TSH  &lt;- 
   TSH %&gt;% 
@@ -2579,21 +2569,21 @@ add_cohort  &lt;- function(n){
 <h2><span class="header-section-number">3.28</span> Check hyper / hypo</h2>
 <pre class="r"><code>TSH %&gt;% 
   count(`hyper/hypo`)</code></pre>
-<pre><code>## # A tibble: 69 x 3
+<pre><code>## # A tibble: 36 x 3
 ## # Groups:   Paper [35]
-##    Paper         `hyper/hypo`     n
-##    &lt;chr&gt;         &lt;chr&gt;        &lt;int&gt;
-##  1 Bano 2016     &lt;NA&gt;             5
-##  2 Bano 2016     hypo             1
-##  3 Bano 2018     &lt;NA&gt;             7
-##  4 Bano 2018     hyper/hypo       1
-##  5 Cappola et al &lt;NA&gt;            19
-##  6 Cappola et al hyper            1
-##  7 Chaker * 2015 &lt;NA&gt;            13
-##  8 Chaker * 2015 hyper(cont)      1
-##  9 Chaker 2015   &lt;NA&gt;             8
-## 10 Chaker 2015   hyper            1
-## # … with 59 more rows</code></pre>
+##    Paper             `hyper/hypo`     n
+##    &lt;chr&gt;             &lt;chr&gt;        &lt;int&gt;
+##  1 Bano 2016         hypo             6
+##  2 Bano 2018         hyper/hypo       8
+##  3 Cappola et al     hyper           20
+##  4 Chaker * 2015     hyper           14
+##  5 Chaker 2015       hyper            9
+##  6 Chaker 2015 JCEM  hyper            6
+##  7 Chaker 2016       hypo             9
+##  8 Chaker et al 2015 hyper            6
+##  9 Chan              hyper           30
+## 10 de Jong           hyper            4
+## # … with 26 more rows</code></pre>
 </div>
 <div id="devil-advocate-sampling" class="section level2">
 <h2><span class="header-section-number">3.29</span> Devil advocate sampling</h2>
@@ -2654,6 +2644,23 @@ $(document).ready(function () {
 
 
 </script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

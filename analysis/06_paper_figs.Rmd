@@ -1,0 +1,122 @@
+---
+title: "CI plots"
+author: "Jono Tuke"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    theme: spacelab
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE, 
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 6, 
+  fig.asp = 0.618, 
+  out.width = "70%",
+  fig.align = "center", 
+  root.dir = '../'
+)
+pacman::p_load(
+  tidyverse, lubridate, stringr, glue, lme4, lmerTest, extrafont
+)
+source("../code/get_label.R")
+source("../code/visualise_ci.R")
+theme_set(theme_bw())
+dpi  <- 100
+```
+
+# Read in clean data
+
+```{r}
+# TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
+TSH_long  <- read_rds("../data/2019082-02_convert_long.rds")
+```
+
+# Fonts
+
+```{r, eval = FALSE}
+font_import()
+fonts()
+```
+
+```{r}
+loadfonts()
+```
+
+# Figure 2
+
+```{r}
+overall_ci  <- 
+  TSH_long %>% 
+  filter(!is.na(Sig)) %>% 
+  group_by(Thyroid_test) %>% 
+  summarise(
+    n_sig = sum(Sig == "Y"), 
+    N = n(), 
+    p = n_sig / N,
+    lwr = p - 1.96 * sqrt(p * (1 - p) / N),
+    upr = p + 1.96 * sqrt(p * (1 - p) / N)
+  )
+```
+
+
+```{r}
+ggplot(overall_ci, aes( Thyroid_test, p, col = Thyroid_test)) + 
+  geom_point() + 
+  geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0.1) + 
+  theme(legend.position = "none") + 
+  labs(y = "Proportion of results that showed a statistically \nsignificant association with clinical parameters.", x = "Thyroid test") + 
+  scale_x_discrete(label = c("Free T4", "Free T3 / Total T3", "TSH")) + 
+  theme(text = element_text(family = "Times New Roman", size = 12))
+```
+
+```{r}
+ggsave("../figs/Figure_2.tiff", width = 6, height = 6, dpi = dpi)
+```
+
+# Figure 3
+
+```{r}
+p  <- visualise_ci(TSH_long, N_bin)
+p +
+  labs(y = "Proportion of results that showed a statistically \nsignificant association with clinical parameters.", 
+       x = "Number of subjects", 
+       col = "Thyroid test") + 
+  scale_x_discrete(
+    label = c("0 - 1010", "1011 - 1580", 
+              "1581 - 2390", "2391 - 3650", 
+              "3651 - 10314")
+  ) + 
+  scale_color_discrete(
+    label = c("Free T4", "Free T3 / Total T3", "TSH")
+  ) + 
+  theme(text = element_text(family = "Times New Roman", size = 12))
+```
+
+```{r}
+ggsave("../figs/Figure_3.tiff", width = 6, height = 6, dpi = dpi)
+```
+
+# Figure 4
+
+```{r}
+p  <- visualise_ci(TSH_long, `hyper/hypo`)
+p +
+  labs(y = "Proportion of results that showed a statistically \nsignificant association with clinical parameters.", 
+       x = NULL, 
+       col = "Thyroid test") + 
+  scale_color_discrete(
+    label = c("Free T4", "Free T3 / Total T3", "TSH")
+  ) + 
+  scale_x_discrete(
+    label = c("Hyperthyroidism", "Mixed", "Hypothyroidism")
+  ) + 
+  theme(text = element_text(family = "Times New Roman", size = 12))
+```
+
+```{r}
+ggsave("../figs/Figure_4.tiff", width = 6, height = 6, dpi = dpi)
+```

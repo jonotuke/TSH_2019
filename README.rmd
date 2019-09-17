@@ -114,3 +114,18 @@ please check the paper- in particular note that the literature search is now in 
 'Thyroid' requires all figures to be in .tif or .eps files. These are not available on my old program. Are tables too, saveable in such format- do they need to be- are they counted as 'figures'? Henrik , if you do figure(s) for the search can you do the appropriate format?
 best wishes,
 Stephen
+
+# Sunday 04 Aug 2019
+
+## Instructions for figures
+
+Please follow these instructions when preparing figure files for uploading.
+
+- Line illustrations must be submitted at 900 dpi.
+- Halftones and color photos should be submitted at a minimum of 300 dpi.
+- Power Point files cannot be uploaded.
+- Save art as either TIFF or EPS files. Avoid submitting JPEG or PDF files.
+- Color art must be saved as CMYK, not RGB.
+- Color illustrations can be printed in the journal, with a subsidy from the author(s).
+
+If you need directions on how to convert a Power Point slide to acceptable format, go to <www.liebertpub.com/MEDIA/pdf/ppconvert.pdf>

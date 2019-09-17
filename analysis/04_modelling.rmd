@@ -30,6 +30,7 @@ source("../code/get_cov.R")
 
 ```{r}
 TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
+TSH_long  <- read_rds("../data/2019082-02_convert_long.rds")
 ```
 
 
@@ -381,6 +382,7 @@ Not significant so not needed.
 
 ```{r}
 high_low_models  <- get_cov("high_low")
+high_low_models %>% arrange(BIC) %>% knitr::kable()
 ```
 
 To little data to fit. 

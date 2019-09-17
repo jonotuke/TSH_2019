@@ -1,0 +1,57 @@
+---
+title: "Summary statistics"
+author: "Jono Tuke"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    theme: spacelab
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  fig.width = 6, 
+  fig.asp = 0.618, 
+  out.width = "70%",
+  fig.align = "center", 
+  root.dir = '../'
+)
+pacman::p_load(
+  tidyverse, lubridate, stringr, glue, lme4, lmerTest, inspectdf
+)
+source("../code/get_label.R")
+source("../code/visualise_ci.R")
+```
+
+# Read in clean data
+
+```{r}
+# TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
+TSH_long  <- read_rds("../data/2019082-02_convert_long.rds")
+TSH_long
+```
+
+# Summaries
+
+## Number of papers
+
+```{r} 
+length(unique(TSH_long$Paper))
+```
+
+## Number
+
+```{r}
+TSH_long %>% inspect_num()
+```
+
+## Results
+
+```{r}
+TSH_long %>% count(Paper) %>% arrange(n)
+TSH_long %>% count(Paper) %>% arrange(desc(n))
+TSH_long %>% count(Paper) %>% summarise(mean(n))
+```
+
+

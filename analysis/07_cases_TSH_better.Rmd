@@ -1,0 +1,56 @@
+---
+title: "When is TSH better"
+author: "Jono Tuke"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    theme: spacelab
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE, 
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 6, 
+  fig.asp = 0.618, 
+  out.width = "70%",
+  fig.align = "center", 
+  root.dir = '../'
+)
+pacman::p_load(
+  tidyverse, lubridate, stringr, glue, lme4, lmerTest, extrafont
+)
+source("../code/get_label.R")
+source("../code/visualise_ci.R")
+theme_set(theme_bw())
+```
+
+# Read in clean data
+
+```{r}
+# TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
+TSH_long  <- read_rds("../data/2019082-02_convert_long.rds")
+TSH_long
+```
+
+```{r}
+get_prop  <- function(df, pred){
+  pred  <- enquo(pred)
+  
+  df %>% 
+    count(!!pred, Thyroid_test, Sig) %>% 
+    filter(!is.na(Sig)) %>% 
+    group_by(!!pred, Thyroid_test) %>% 
+    mutate(N = sum(n)) %>% 
+    filter(Sig == "Y") %>% 
+    mutate(p = n / N) %>% 
+    select(!!pred, Thyroid_test, p) %>% 
+    spread(Thyroid_test, p) %>% 
+    filter(TSH > FT4 | TSH > T3)
+}
+get_prop(TSH_long, Condition)
+get_prop(TSH_long, system)
+```
+

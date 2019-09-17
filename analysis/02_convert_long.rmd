@@ -1,7 +1,7 @@
 ---
 title: "Convert to long form"
 author: "Jono Tuke"
-date: "23/03/2019"
+date: "`r Sys.Date()`"
 output: 
   html_document:
     theme: spacelab
@@ -26,8 +26,14 @@ source("../code/get_label.R")
 # Read in clean data
 
 ```{r}
-TSH  <- read_rds("../data/20190716-01_cleaning-data.rds")
+TSH  <- read_rds("../data/2019082-01_cleaning-data.rds")
 TSH
+```
+
+# Remove grouping
+
+```{r}
+TSH  <- TSH %>% ungroup()
 ```
 
 # Add ID
@@ -41,18 +47,22 @@ TSH$ID  <- seq_along(TSH$Paper)
 First take the the significance so row for each significance result. The key measure is made up of two parts - thanks NB for listening - this means that we can split into measure and T4 form
 
 ```{r}
-TSH
-TSH %>% dplyr::select(dplyr::matches("FT4|TSH|T3"))
-spec  <- TSH %>% 
-  pivot_longer_spec(
-    cols = dplyr::matches("FT4|TSH|T3"), 
-    names_to = c("Thyroid_test", ".value"),
-    names_sep = "_" )
-spec
 TSH_long  <- 
-  TSH %>% 
-  pivot_longer(spec = spec)
-TSH_long
+  TSH  %>% 
+  gather(key = "key", value = "value", dplyr::matches("FT4|TSH|T3") ) %>% 
+  separate(key, into = c("Thyroid_test", "measure")) %>% 
+  spread(measure, value)
+# spec  <- TSH %>%
+#   pivot_longer_spec(
+#     cols = dplyr::matches("FT4|TSH|T3"),
+#     names_to = c("Thyroid_test", ".value"),
+#     names_sep = "_" )
+# spec
+# TSH_long  <-
+#   TSH %>% 
+#   ungroup() %>% 
+#   pivot_longer(spec = spec)
+# TSH_long
 ```
 
 # Add in extra treatment
@@ -116,7 +126,10 @@ TSH_long <-
 # N
 
 ```{r}
+TSH_long$N  <- as.numeric(TSH_long$N)
+TSH_long
 TSH_long %>% ggplot(aes(N)) + geom_histogram(col = "black", fill = "orange")
+summary(TSH_long$N)
 TSH_long  <- 
   TSH_long %>% 
   mutate(N_bin = cut_number(N, 5))
