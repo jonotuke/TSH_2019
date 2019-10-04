@@ -253,5 +253,110 @@ $$
 forest(meta1_MA, prediction = TRUE)
 ```
 
+## Sub-group
+
+```{r}
+meta3  <- read_csv("../data/dataset03.csv")
+meta3
+```
+
+```{r}
+meta3_MA  <- metacont(Ne, Me, Se, 
+                      Nc, Mc, Sc, 
+                      studlab = paste(author, year), 
+                      data = meta3)
+```
+
+
+```{r}
+meta3_MA
+```
+
+```{r}
+forest(meta3_MA)
+```
+
+```{r}
+meta3_SG_MA  <- metacont(Ne, Me, Se, 
+                         Nc, Mc, Sc, 
+                         studlab = paste(author, year), 
+                         data = meta3, 
+                         byvar = duration)
+```
+
+```{r}
+meta3_SG_MA
+```
+
+```{r}
+forest(meta3_SG_MA)
+```
+
+# Binary outcomes
+
+## Setup
+
+```{r}
+df  <- tribble(
+  ~group, ~event, ~no_event, ~grp_size, 
+  "experiment", "$a_k$", "$b_k$", "$n_{ek} = a_k + b_k$",
+  "control", "$c_k$", "$d_k$", "$n_{ck} = c_k + d_k$",
+  "", "$a_k + c_k$", "$b_k + d_k$", "$n_k$"
+)
+df %>% 
+  knitr::kable()
+```
+
+
+$$
+p_{ek} = a_k / n_{ek}, \quad
+p_{ck} = c_k / n_{ck}
+$$
+## Odds ratio
+
+$$
+\psi_k = \frac{\frac{p_{ek}}{(1 - p_{ek})}}
+{\frac{p_{ck}}{(1 - p_{ck})}} = 
+\frac{a_kd_k}{b_kc_k}
+$$
+```{r}
+meta4  <- read_csv("../data/dataset07.csv")
+meta4
+```
+
+```{r}
+meta4_MA_OR  <- metabin(Ee, Ne, Ec, Nc, data = meta4, sm = "OR", method = "I")
+meta4_MA_OR
+```
+
+```{r}
+forest(meta4_MA)
+```
+
+## Relative risk
+
+$$
+\phi_k = \frac{p_{ek}}{p_{ck}}
+$$
+
+```{r}
+meta4_MA_RR  <- metabin(Ee, Ne, Ec, Nc, data = meta4, sm = "RR", method = "I")
+meta4_MA_RR
+```
+
+## Risk difference
+
+$$
+\eta_k = p_{ek} - p_{ck}
+$$
+
+```{r}
+meta4_MA_RD  <- metabin(Ee, Ne, Ec, Nc, data = meta4, sm = "RD", method = "I")
+meta4_MA_RD
+```
+
+## Meta-regression
+
+
 
 # References
