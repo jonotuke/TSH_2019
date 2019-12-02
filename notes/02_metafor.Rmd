@@ -1,0 +1,108 @@
+---
+title: "Metaphor package"
+author: "Jono Tuke"
+date: "October 2019"
+output: 
+  html_document:
+    theme: spacelab
+    number_sections: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  fig.width = 6, 
+  fig.asp = 0.618, 
+  out.width = "70%",
+  fig.align = "center", 
+  root.dir = '../'
+)
+```
+
+# Libs
+
+```{r}
+pacman::p_load(tidyverse, metafor, meta)
+```
+
+# Load data
+
+```{r}
+dat.bcg  <- dat.bcg[, 2:7]
+dat.bcg
+```
+
+# Analysis
+
+Get log ratio and variance
+
+```{r}
+dat1 <- escalc(measure="OR", ai=tpos, bi=tneg, ci=cpos, di=cneg, data=dat.bcg)
+dat1
+```
+
+```{r}
+res1 <- rma(yi, vi, data=dat1)
+res1
+```
+
+```{r}
+forest.rma(res1)
+```
+
+## Compare to meta package
+
+```{r}
+dat.bcg <- 
+  dat.bcg %>% 
+  mutate(Ee = tpos, Ne = tpos + tneg, Ec = cpos, Nc = cpos + cneg)
+bcg_meta  <- metabin(Ee, Ne, Ec, Nc, data = dat.bcg)
+bcg_meta
+forest(bcg_meta)
+```
+
+# Missing data
+
+```{r}
+dat2 <- data.frame(summary(dat1, transf=exp))
+names(dat2)[which(names(dat2) == "yi")] <- "or"
+dat2$pval <- 2 * pnorm(abs(dat2$zi), lower.tail=FALSE)
+dat2[,c("or","ci.lb","ci.ub","pval")] <- round(dat2[,c("or","ci.lb","ci.ub","pval")], 2)
+dat2$vi <- dat2$sei <- dat2$zi <- NULL
+dat2[c(1,12),c(3:6,8:9)] <- NA
+dat2[c(4,9), c(3:6,10)] <- NA
+dat2[c(2,3,5:8,10,11,13),c(7:10)] <- NA
+dat2
+```
+
+```{r}
+dat2 <- escalc(measure="OR", ai=tpos, bi=tneg, ci=cpos, di=cneg, data=dat2)
+dat2
+```
+
+```{r}
+dat2$yi <- replmiss(dat2$yi, log(dat2$or))
+dat2
+```
+
+```{r}
+dat2$zi <- sign(dat2$yi) * qnorm(dat2$pval/2, lower.tail=FALSE)
+dat2
+```
+
+
+```{r}
+dat2$sei <- dat2$yi / dat2$zi
+dat2
+```
+
+```{r}
+dat2$sei <- replmiss(dat2$sei, with(dat2, (log(ci.ub) - log(ci.lb))/(2*1.96)))
+dat2
+```
+
+```{r}
+dat2$vi <- replmiss(dat2$vi, dat2$sei^2)
+dat2
+```
+

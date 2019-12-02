@@ -26,7 +26,7 @@ source("../code/get_label.R")
 # Read in clean data
 
 ```{r}
-TSH  <- read_rds("../data/2019082-01_cleaning-data.rds")
+TSH  <- read_rds("../data/20191202-01_cleaning-data.rds")
 TSH
 ```
 
@@ -47,22 +47,20 @@ TSH$ID  <- seq_along(TSH$Paper)
 First take the the significance so row for each significance result. The key measure is made up of two parts - thanks NB for listening - this means that we can split into measure and T4 form
 
 ```{r}
-TSH_long  <- 
-  TSH  %>% 
-  gather(key = "key", value = "value", dplyr::matches("FT4|TSH|T3") ) %>% 
-  separate(key, into = c("Thyroid_test", "measure")) %>% 
-  spread(measure, value)
-# spec  <- TSH %>%
-#   pivot_longer_spec(
-#     cols = dplyr::matches("FT4|TSH|T3"),
-#     names_to = c("Thyroid_test", ".value"),
-#     names_sep = "_" )
-# spec
-# TSH_long  <-
-#   TSH %>% 
-#   ungroup() %>% 
-#   pivot_longer(spec = spec)
-# TSH_long
+# TSH_long  <- 
+#   TSH  %>% 
+#   gather(key = "key", value = "value", dplyr::matches("FT4|TSH|T3") ) %>% 
+#   separate(key, into = c("Thyroid_test", "measure")) %>% 
+#   spread(measure, value)
+TSH_long  <-
+  TSH %>%
+  ungroup() %>% 
+  pivot_longer(
+    cols = dplyr::matches("FT4_|TSH_|T3_"),
+    names_to = c("Thyroid_test", ".value"),
+    names_sep = "_" 
+  )
+TSH_long
 ```
 
 # Add in extra treatment
@@ -146,6 +144,6 @@ TSH_long
 # Write data
 
 ```{r}
-write_rds(TSH_long, glue("../data/{get_label()}"))
+write_rds(TSH_long, glue("../data/20191202-02_convert_long.rds"))
 ```
 

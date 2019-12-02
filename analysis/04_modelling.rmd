@@ -29,8 +29,9 @@ source("../code/get_cov.R")
 # Read in clean data
 
 ```{r}
+# TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
+# TSH_long  <- read_rds("../data/2019082-02_convert_long.rds")
 TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
-TSH_long  <- read_rds("../data/2019082-02_convert_long.rds")
 ```
 
 

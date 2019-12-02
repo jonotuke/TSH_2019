@@ -330,7 +330,7 @@ meta4_MA_OR
 ```
 
 ```{r}
-forest(meta4_MA)
+forest(meta4_MA_OR)
 ```
 
 ## Relative risk

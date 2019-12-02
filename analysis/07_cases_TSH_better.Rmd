@@ -31,7 +31,8 @@ theme_set(theme_bw())
 
 ```{r}
 # TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
-TSH_long  <- read_rds("../data/2019082-02_convert_long.rds")
+# TSH_long  <- read_rds("../data/2019082-02_convert_long.rds")
+TSH_long  <- read_rds("../data/20191202-02_convert_long.rds")
 TSH_long
 ```
 

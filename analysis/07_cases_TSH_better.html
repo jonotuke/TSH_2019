@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 <meta name="author" content="Jono Tuke" />
 
-<meta name="date" content="2019-08-04" />
+<meta name="date" content="2019-12-02" />
 
 <title>When is TSH better</title>
 
@@ -295,7 +294,6 @@ code {
 }
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -357,6 +355,7 @@ summary {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -390,39 +389,46 @@ summary {
 
 <h1 class="title toc-ignore">When is TSH better</h1>
 <h4 class="author">Jono Tuke</h4>
-<h4 class="date">2019-08-04</h4>
+<h4 class="date">2019-12-02</h4>
 
 </div>
 
 
 <div id="read-in-clean-data" class="section level1">
 <h1><span class="header-section-number">1</span> Read in clean data</h1>
-<pre><code>## # A tibble: 1,386 x 27
-##    `hyper/hypo` Paper CvQ   Condition    ID system cohort low_selected
-##    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;     &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;lgl&gt;       
-##  1 hyper        Capp… Cont… AF            1 cardi… C4     FALSE       
-##  2 hyper        Capp… Cont… AF            2 cardi… C4     FALSE       
-##  3 hyper        Capp… Cont… CHD           3 cardi… C3     FALSE       
-##  4 hyper        Capp… Cont… CHD           4 cardi… C3     FALSE       
-##  5 hyper        Capp… Cont… Incident…     5 cardi… C5     FALSE       
-##  6 hyper        Capp… Cont… Incident…     6 cardi… C5     FALSE       
-##  7 hyper        Capp… Cont… Composit…     7 cardi… C2     FALSE       
-##  8 hyper        Capp… Cont… Composit…     8 cardi… C2     FALSE       
-##  9 hyper        Capp… Cont… Hip Frac…     9 ortho… C6     FALSE       
-## 10 hyper        Capp… Cont… Hip Frac…    10 ortho… C6     FALSE       
-## # … with 1,376 more rows, and 19 more variables: high_selected &lt;lgl&gt;,
-## #   Thyroid_test &lt;chr&gt;, bounded &lt;chr&gt;, count &lt;chr&gt;, countCI &lt;chr&gt;,
-## #   cov &lt;chr&gt;, inferred &lt;chr&gt;, method &lt;chr&gt;, N &lt;dbl&gt;, OR &lt;chr&gt;,
-## #   ORCI &lt;chr&gt;, pv &lt;chr&gt;, Sig &lt;chr&gt;, Sophistication &lt;chr&gt;, total &lt;chr&gt;,
+<pre><code>## # A tibble: 2,568 x 31
+##    `hyper/hypo` Paper CvQ   Condition `NOS score` `TSH incong` `cross-section`
+##    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;          
+##  1 Hyper        Capp… Cont… AF                  9 0            N              
+##  2 Hyper        Capp… Cont… AF                  9 0            N              
+##  3 Hyper        Capp… Cont… AF                  9 0            N              
+##  4 Hyper        Capp… Cont… AF                 NA &lt;NA&gt;         &lt;NA&gt;           
+##  5 Hyper        Capp… Cont… AF                 NA &lt;NA&gt;         &lt;NA&gt;           
+##  6 Hyper        Capp… Cont… AF                 NA &lt;NA&gt;         &lt;NA&gt;           
+##  7 Hyper        Capp… Cont… CHD                NA &lt;NA&gt;         &lt;NA&gt;           
+##  8 Hyper        Capp… Cont… CHD                NA &lt;NA&gt;         &lt;NA&gt;           
+##  9 Hyper        Capp… Cont… CHD                NA &lt;NA&gt;         &lt;NA&gt;           
+## 10 Hyper        Capp… Cont… CHD                NA &lt;NA&gt;         &lt;NA&gt;           
+## # … with 2,558 more rows, and 24 more variables: `abstract score` &lt;chr&gt;,
+## #   ID &lt;int&gt;, system &lt;chr&gt;, cohort &lt;chr&gt;, low_selected &lt;lgl&gt;,
+## #   high_selected &lt;lgl&gt;, Thyroid_test &lt;chr&gt;, N &lt;dbl&gt;, method &lt;chr&gt;, Sig &lt;chr&gt;,
+## #   Sophistication &lt;chr&gt;, cov &lt;chr&gt;, total &lt;chr&gt;, inferred &lt;lgl&gt;, pv &lt;dbl&gt;,
+## #   bounded &lt;lgl&gt;, OR &lt;dbl&gt;, ORCI &lt;chr&gt;, count &lt;chr&gt;, countCI &lt;chr&gt;,
 ## #   Thyroid_test_4 &lt;chr&gt;, high_low &lt;chr&gt;, n_cov &lt;chr&gt;, N_bin &lt;fct&gt;</code></pre>
-<pre><code>## # A tibble: 1 x 4
-## # Groups:   Condition [1]
-##   Condition             FT4    T3   TSH
-##   &lt;chr&gt;               &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 chol-total - female 0.333     1 0.667</code></pre>
-<pre><code>## # A tibble: 0 x 4
-## # Groups:   system [0]
-## # … with 4 variables: system &lt;chr&gt;, FT4 &lt;dbl&gt;, T3 &lt;dbl&gt;, TSH &lt;dbl&gt;</code></pre>
+<pre><code>## # A tibble: 4 x 4
+## # Groups:   Condition [4]
+##   Condition                                    FT4    T3   TSH
+##   &lt;chr&gt;                                      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 chol-total - female                        0.333   1   0.667
+## 2 dementia - normal range exclude medication 0.667  NA   1    
+## 3 TC - non-diabetics                         0.5     0.5 1    
+## 4 TG - diabetics                             0.5     0.5 1</code></pre>
+<pre><code>## # A tibble: 2 x 4
+## # Groups:   system [2]
+##   system   FT4     T3   TSH
+##   &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+## 1 cancer 0.347 0.103  0.16 
+## 2 mixed  0.630 0.0435 0.171</code></pre>
 </div>
 
 
