@@ -14,6 +14,7 @@ clean_pv  <- function(x, check = FALSE){
   origin_x  <- x
   # Set non stated to NA
   x[str_detect(x,"not stated")]  <- NA
+  x[str_detect(x,"NS")]  <- NA
   # Get bounds on PV
   bounded  <- ifelse(str_detect(x, "<"), TRUE, FALSE)
   # Remove `<`
@@ -46,19 +47,20 @@ clean_pv  <- function(x, check = FALSE){
     tmp  <- df[index, ]
     tmp  <- tmp[!is.na(tmp[,1]),]
     tmp  <- tmp[!str_detect(tmp$origin_x, "not stated"),]
+    tmp  <- tmp[!str_detect(tmp$origin_x, "NS"),]
     return(tmp)
   }
   return(df)
 }
 df  <- tibble(
   x_PV = c("0.001", "<0.001", "1.1(0.9-1.2)", 
-           "not stated", "11/100(1-2)", "1(0.9-1.2)")
+           "not stated", "11/100(1-2)", "1(0.9-1.2)", "NS")
   )
 results  <- clean_pv(df$x_PV)
 results
-expect_equal(results$x_pv, c(0.001, 0.001, NA, NA, NA, NA))
-expect_equal(results$x_bounded, c(F, T, F, NA, F, F))
-expect_equal(results$x_OR, c(NA, NA, 1.1, NA, NA, 1))
-expect_equal(results$x_ORCI, c(NA, NA, "0.9-1.2", NA, NA, "0.9-1.2"))
-expect_equal(results$x_count, c(NA, NA, NA, NA, "11/100", NA))
-expect_equal(results$x_countCI, c(NA, NA, NA, NA, "1-2", NA))
+expect_equal(results$x_pv, c(0.001, 0.001, NA, NA, NA, NA, NA))
+expect_equal(results$x_bounded, c(F, T, F, NA, F, F, NA))
+expect_equal(results$x_OR, c(NA, NA, 1.1, NA, NA, 1, NA))
+expect_equal(results$x_ORCI, c(NA, NA, "0.9-1.2", NA, NA, "0.9-1.2", NA))
+expect_equal(results$x_count, c(NA, NA, NA, NA, "11/100", NA, NA))
+expect_equal(results$x_countCI, c(NA, NA, NA, NA, "1-2", NA, NA))

@@ -56,7 +56,8 @@ Nigel did some cleaning of the original dataset as follows
 # TSH  <- read_excel("../raw data/20190519_excel tsh_2019_data.xlsx")
 # TSH  <- read_excel("../raw data/20190708_excel tsh_2019_data.xlsx")
 # TSH  <- read_excel("../raw data/20190714_excel tsh2_2019_data.xlsx")
-TSH  <- read_excel("../raw data/20191107_excel TSH.xlsx")
+# TSH  <- read_excel("../raw data/20191107_excel TSH.xlsx")
+TSH  <- read_excel("../raw data/20191205_excel TSH.xlsx")
 TSH
 ```
 
@@ -80,6 +81,7 @@ TSH  <-
 Nigel has mentioned that left blank rows between the papers
 
 ```{r}
+TSH %>% filter(is.na(Paper))
 TSH
 TSH  <- 
   TSH %>% 
@@ -129,13 +131,25 @@ I assume that `quartile analysis` and `Quartile analysis` are the same so collap
 
 Will map `dichotomised` to `Dichotomous`
 
+5th Dec 2019: 
+
+Use the following set of mappings:
+
 ```{r}
 TSH  <- 
   TSH %>% 
   mutate(
-    CvQ = str_replace(CvQ, "dichotomised", "Dichotomous")
+    CvQ = str_to_lower(CvQ), 
+    CvQ = case_when(
+      str_detect(CvQ, "cont") ~ "continuous",
+      str_detect(CvQ, "dicho") ~ "dichotomous",
+      str_detect(CvQ, "quart") ~ "quartile",
+      str_detect(CvQ, "performance") ~ "performance",
+      TRUE ~ CvQ
     )
+  )
 ```
+
 
 ```{r}
 TSH %>% 
@@ -551,6 +565,19 @@ TSH  <-
   )
 ```
 
+Convert `free` to `Free`
+
+```{r}
+TSH  <- 
+  TSH %>% 
+  mutate(
+    T3_total = str_to_title(T3_total)
+  )
+```
+
+```{r}
+TSH %>% count(T3_total)
+```
 
 ## Remove original PV columns
 
@@ -598,58 +625,73 @@ TSH %>%
 
 ## Devil advocate sampling
 
-The idea is that within each paper / cohort, we will randomly select one small model, and one large model. 
+For each paper, we select one analysis from the following treatments:
 
-First we will get a randomly selected low model
+- low size, low number of covariates
+- low size, large number of covariates
+- large size, low number of covariates
+- large size, large number of covariates
 
-```{r}
-set.seed(2019)
-TSH  <- 
-  TSH %>% 
-  group_by(Paper, cohort) %>% 
-  mutate(low_selected = get_DA(FT4_Sophistication, type = "Low"))
-```
-
-
-Check that one per paper / cohort 
-
-```{r}
-TSH %>% 
-  filter(low_selected == TRUE) %>% 
-  count(Paper, cohort) %>% 
-  ungroup() %>% 
-  count(n)
-```
-
-Now add high model
+Samples first for size and then for method. May get repeated analysis, but ensures an analysis for each treatment level. 
 
 ```{r}
 set.seed(2019)
-TSH  <- 
-  TSH %>% 
-  group_by(Paper, cohort) %>% 
-  mutate(high_selected = get_DA(FT4_Sophistication, type = "High"))
+TSH  <-
+  TSH %>%
+  group_by(Paper) %>%
+  mutate(
+    min_size_min_method = get_DA(
+      FT4_N, FT4_cov, size = 'min', method = 'min'),
+    min_size_max_method = get_DA(
+      FT4_N, FT4_cov, size = 'min', method = 'max'),
+    max_size_min_method = get_DA(
+      FT4_N, FT4_cov, size = 'max', method = 'min'),
+    max_size_max_method = get_DA(
+      FT4_N, FT4_cov, size = 'max', method = 'max')
+  )
 ```
 
-Check again
+So there should be one for each paper. 
+
+```{r}
+length(unique(TSH$Paper))
+TSH %>% filter(min_size_min_method)
+TSH %>% filter(min_size_max_method)
+TSH %>% filter(max_size_min_method)
+TSH %>% filter(max_size_max_method)
+```
+
+Sample to compare
+```{r}
+TSH %>% 
+  filter(Paper == TSH$Paper[1], min_size_min_method) %>% 
+  select(Paper, FT4_N, FT4_cov)
+```
+```{r}
+TSH %>% 
+  filter(Paper == TSH$Paper[1], min_size_max_method) %>% 
+  select(Paper, FT4_N, FT4_cov)
+```
+```{r}
+TSH %>% 
+  filter(Paper == TSH$Paper[1], max_size_min_method) %>% 
+  select(Paper, FT4_N, FT4_cov)
+```
 
 ```{r}
 TSH %>% 
-  filter(high_selected == TRUE) %>% 
-  count(Paper, cohort) %>% 
-  ungroup() %>% 
-  count(n)
+  filter(Paper == TSH$Paper[1], max_size_max_method) %>% 
+  select(Paper, FT4_N, FT4_cov)
 ```
 
 
-```{r}
-glimpse(TSH)
-```
 
 
 # Save clean data
 
 ```{r}
-write_rds(TSH, glue("../data/20191202-01_cleaning-data.rds"))
+write_rds(TSH, glue("../data/20191205-01_cleaning-data.rds"))
 ```
+
+
 

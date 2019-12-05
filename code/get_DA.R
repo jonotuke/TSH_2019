@@ -7,36 +7,80 @@
 #' @export
 #'
 #' @examples
-get_DA  <- function(x, type = "Low"){
-  chosen  <- logical(length(x))
-  i  <- which(x == type)
-  if(length(i) > 0){
-    i  <- sample(i, 1)
-    chosen[i]  <- TRUE
+get_DA  <- function(size_col, method_col, method = "min", size = "min"){
+  df  <- tibble(size = size_col, method = method_col)
+  chosen  <- logical(nrow(df))
+  df  <- 
+    df %>% 
+    mutate(
+      n_cov = str_split(method, ",") %>% map_dbl(length), 
+      ID = row_number()
+    )
+  if(method == "min" & size == "min"){
+    df  <- 
+      df %>% 
+      filter(
+        size == min(size)
+        ) %>% 
+      filter(
+        n_cov == min(n_cov)
+      )
   }
+  if(method == "min" & size == "max"){
+    df  <- 
+      df %>% 
+      filter(
+        size == max(size)
+      ) %>% 
+      filter(
+        n_cov == min(n_cov)
+      )
+  }
+  if(method == "max" & size == "min"){
+    df  <- 
+      df %>% 
+      filter(
+        size == min(size)
+      ) %>% 
+      filter(
+        n_cov == max(n_cov)
+      )
+  }
+  if(method == "max" & size == "max"){
+    df  <- 
+      df %>% 
+      filter(
+        size == max(size)
+      ) %>% 
+      filter(
+        n_cov == max(n_cov)
+      )
+  }
+  # Sample
+  df  <- df %>% sample_n(1)
+  chosen[df %>% pull(ID)]  <- TRUE
   return(chosen)
 }
 
 ## Driver
-# tmp  <- 
-#   TSH %>% filter(
-#   Paper == "Chaker 2015", 
-#   cohort == "C2"
-# ) 
-# get_DA(tmp$FT4_Sophistication, type = "Low")
-# tmp  <- 
-#   TSH %>% filter(
-#   Paper == "Chaker * 2015", 
-#   cohort == "C4"
-# ) 
-# get_DA(tmp$FT4_Sophistication, type = "High")
 # TSH %>% 
-#   group_by(Paper, cohort) %>% 
-#   mutate(selected_low = get_DA(FT4_Sophistication, type = "Low")) %>% 
-#   count(selected_low) %>% 
-#   filter(selected_low == TRUE, n > 1)
-# TSH %>% 
-#   group_by(Paper, cohort) %>% 
-#   mutate(selected_high = get_DA(FT4_Sophistication, type = "High")) %>% 
-#   count(selected_high) %>% 
-#   filter(selected_high == TRUE, n > 1)
+#   ungroup() %>% 
+#   filter(Paper == TSH$Paper[1]) %>%
+#   mutate(
+#     test = get_DA(FT4_N, FT4_cov, size = "min", method = "min")
+#   )
+# 
+# TSH_test  <- 
+#   TSH %>% 
+#   group_by(Paper) %>% 
+#   mutate(
+#     min_size_min_method = get_DA(FT4_N, FT4_cov, size = 'min', method = 'min'),
+#     min_size_max_method = get_DA(FT4_N, FT4_cov, size = 'min', method = 'max'),
+#     max_size_min_method = get_DA(FT4_N, FT4_cov, size = 'max', method = 'min'),
+#     max_size_max_method = get_DA(FT4_N, FT4_cov, size = 'max', method = 'max')
+#   )
+# 
+# TSH_test %>% filter(min_size_min_method)
+# TSH_test %>% filter(min_size_max_method)
+# TSH_test %>% filter(max_size_min_method)
+# TSH_test %>% filter(max_size_max_method)

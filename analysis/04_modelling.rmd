@@ -6,6 +6,8 @@ output:
   html_document:
     theme: spacelab
     number_sections: yes
+    toc: yes
+    toc_float: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -31,7 +33,8 @@ source("../code/get_cov.R")
 ```{r}
 # TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
 # TSH_long  <- read_rds("../data/2019082-02_convert_long.rds")
-TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
+# TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
+TSH_long  <- read_rds("../data/20191205-02_convert_long.rds")
 ```
 
 
@@ -377,7 +380,28 @@ First test for whether need sophistication RI:
 anova(tsh_glmer_M_paperRI, tsh_glmer_M_paper_soph_RI)
 ```
 
-Not significant so not needed. 
+Significant random effect
+
+## Fixed effect
+
+```{r}
+anova(tsh_glmer_M_paper_soph_RI, tsh_glmer_M_no_test)
+```
+
+So still significant effect of type of test. 
+
+## Final model
+
+```{r}
+summary(tsh_glmer_M_paper_soph_RI)
+```
+
+## Pairwise comparison
+
+```{r}
+summary(glht(tsh_glmer_M_paper_soph_RI, linfct = mcp(Thyroid_test = "Tukey")))
+```
+
 
 # Look at selected systems
 
@@ -390,95 +414,82 @@ To little data to fit.
 
 # Apply Devil's Advocate
 
-## Low models
+## Small size, small model
 
 ```{r}
-TSH_long_low  <- 
-  TSH_long %>% 
-  filter(low_selected == TRUE)
+TSH_DA  <- TSH_long %>% filter(min_size_min_method)
+TSH_DA
 ```
-
-### Fit models
 
 ```{r}
-M1  <- glmer(Sig ~ Thyroid_test + (1 | Paper), 
-             data = TSH_long_low, family = binomial)
-M2  <- glm(Sig ~ Thyroid_test, 
-             data = TSH_long_low, family = binomial)
-M3  <- glm(Sig ~ 1, 
-             data = TSH_long_low, family = binomial)
+thyroid_model  <- glm(Sig ~ Thyroid_test, 
+             data = TSH_DA, family = binomial)
+null_model  <- glm(Sig ~ 1, 
+             data = TSH_DA, family = binomial)
+anova(null_model, thyroid_model, test = "LRT")
 ```
-
-### Check RI
 
 ```{r}
-anova(M1, M2)
+summary(glht(thyroid_model, 
+             linfct = mcp(Thyroid_test = "Tukey")))
 ```
 
-Random intercept not needed. 
-
-### Thyroid test
+## Small size, large model
 
 ```{r}
-anova(M2, M3, test = "LRT")
+TSH_DA  <- TSH_long %>% filter(min_size_max_method)
+TSH_DA
 ```
-
-Still significant effect of test
-
-### Final model
 
 ```{r}
-summary(M2)
-summary(glht(M2, linfct = mcp(Thyroid_test = "Tukey")))
+thyroid_model  <- glm(Sig ~ Thyroid_test, 
+             data = TSH_DA, family = binomial)
+null_model  <- glm(Sig ~ 1, 
+             data = TSH_DA, family = binomial)
+anova(null_model, thyroid_model, test = "LRT")
 ```
-
-So significant difference between TSH and Free T4
-
-## High models
 
 ```{r}
-TSH_long_high  <- 
-  TSH_long %>% 
-  filter(high_selected == TRUE)
+summary(glht(thyroid_model, 
+             linfct = mcp(Thyroid_test = "Tukey")))
 ```
 
-### Fit models
+## Large size, small model
 
 ```{r}
-M1  <- glmer(Sig ~ Thyroid_test + (1 | Paper), 
-             data = TSH_long_high, family = binomial)
-M2  <- glm(Sig ~ Thyroid_test, 
-             data = TSH_long_high, family = binomial)
-M3  <- glm(Sig ~ 1, 
-             data = TSH_long_high, family = binomial)
+TSH_DA  <- TSH_long %>% filter(max_size_min_method)
+TSH_DA
 ```
-
-### Check RI
 
 ```{r}
-anova(M1, M2)
+thyroid_model  <- glm(Sig ~ Thyroid_test, 
+             data = TSH_DA, family = binomial)
+null_model  <- glm(Sig ~ 1, 
+             data = TSH_DA, family = binomial)
+anova(null_model, thyroid_model, test = "LRT")
 ```
-
-Random intercept needed. 
-
-### Thyroid test
 
 ```{r}
-anova(M1, M3)
+summary(glht(thyroid_model, 
+             linfct = mcp(Thyroid_test = "Tukey")))
 ```
 
-Still significant effect of test
-
-### Final model
+## Large size, large model
 
 ```{r}
-summary(M1)
-summary(glht(M1, linfct = mcp(Thyroid_test = "Tukey")))
+TSH_DA  <- TSH_long %>% filter(max_size_max_method)
+TSH_DA
 ```
 
-So significant difference between 
+```{r}
+thyroid_model  <- glm(Sig ~ Thyroid_test, 
+             data = TSH_DA, family = binomial)
+null_model  <- glm(Sig ~ 1, 
+             data = TSH_DA, family = binomial)
+anova(null_model, thyroid_model, test = "LRT")
+```
 
-- T3 and Free T4, and 
-- TSH and Free T4. 
-
-
+```{r}
+summary(glht(thyroid_model, 
+             linfct = mcp(Thyroid_test = "Tukey")))
+```

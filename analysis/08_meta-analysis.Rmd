@@ -1,0 +1,47 @@
+---
+title: "Meta-analysis"
+author: "Jono Tuke"
+date: "Dec 2019"
+output: 
+  html_document:
+    theme: spacelab
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  fig.width = 10, 
+  fig.asp = 0.618, 
+  out.width = "100%",
+  fig.align = "center", 
+  root.dir = '../'
+)
+pacman::p_load(tidyverse)
+```
+
+# Read in data
+
+```{r}
+TSH_long  <- read_rds('../data/20191205-02_convert_long.rds')
+TSH_long
+```
+
+# Filter
+
+First find all analysis that have both OR and ORCI
+
+```{r}
+TSH_long_OR  <- TSH_long %>% filter(!is.na(OR), !is.na(ORCI))
+TSH_long_OR
+```
+
+```{r}
+TSH_long_OR %>% count(system, method, Thyroid_test) %>% ggplot(aes(Thyroid_test, n)) + 
+  geom_bar(stat = 'identity', aes(fill = method), position = 'dodge', col = 'black') + 
+  facet_wrap(~system, scales = "free_y") + theme(legend.position = 'bottom')
+```
+

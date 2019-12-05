@@ -6,6 +6,9 @@ output:
   html_document:
     theme: spacelab
     number_sections: yes
+    toc_float: yes
+    toc: yes
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -29,7 +32,8 @@ source("../code/visualise_ci.R")
 ```{r}
 # TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
 # TSH_long  <- read_rds("../data/2019082-02_convert_long.rds")
-TSH_long  <- read_rds("../data/20191202-02_convert_long.rds")
+# TSH_long  <- read_rds("../data/20191202-02_convert_long.rds")
+TSH_long  <- read_rds("../data/20191205-02_convert_long.rds")
 TSH_long
 ```
 
@@ -93,9 +97,16 @@ Again some interaction.
 
 ## Extra treatment
 
+In this case, we will have each of the T3s on there own and a final combined one. 
+
 ```{r}
-overall_ci  <- 
-  TSH_long %>% 
+TSH_long %>% count(Thyroid_test_4)
+```
+
+
+```{r}
+overall_ci  <- TSH_long %>% 
+  filter(str_detect(Thyroid_test_4, "T3")) %>% 
   filter(!is.na(Sig)) %>% 
   group_by(Thyroid_test_4) %>% 
   summarise(
@@ -106,6 +117,17 @@ overall_ci  <-
     upr = p + 1.96 * sqrt(p * (1 - p) / N)
   )
 overall_ci
+combinded  <- tibble(
+  Thyroid_test_4 = "Combined", 
+  n_sig = sum(overall_ci$n_sig),
+  N = sum(overall_ci$N)
+) %>% 
+  mutate(
+    p = n_sig / N,
+    lwr = p - 1.96 * sqrt(p * (1 - p) / N),
+    upr = p + 1.96 * sqrt(p * (1 - p) / N)
+  )
+combinded
 ```
 
 ```{r}
@@ -113,6 +135,8 @@ ggplot(overall_ci, aes( Thyroid_test_4, p, col = Thyroid_test_4)) +
   geom_point() + 
   geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0.1) + 
   theme(legend.position = "none") + 
+  geom_point(aes(Thyroid_test_4, p), data = combinded, shape = 17, size = 3) + 
+  geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0.1, data = combinded, linetype = "dashed", size = 1) + 
   labs(y = "Proportion")
 ```
 
