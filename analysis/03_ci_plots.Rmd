@@ -1,7 +1,7 @@
 ---
 title: "CI plots"
 author: "Jono Tuke"
-date: "`r Sys.Date()`"
+date: "Dec 2019"
 output: 
   html_document:
     theme: spacelab
@@ -23,17 +23,13 @@ knitr::opts_chunk$set(
 pacman::p_load(
   tidyverse, lubridate, stringr, glue, lme4, lmerTest
 )
-source("../code/get_label.R")
 source("../code/visualise_ci.R")
 ```
 
 # Read in clean data
 
 ```{r}
-# TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
-# TSH_long  <- read_rds("../data/2019082-02_convert_long.rds")
-# TSH_long  <- read_rds("../data/20191202-02_convert_long.rds")
-TSH_long  <- read_rds("../data/20191206-02_convert_long.rds")
+TSH_long  <- read_rds("../data/20191207-02_convert_long.rds")
 TSH_long
 ```
 

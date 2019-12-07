@@ -1,7 +1,7 @@
 ---
 title: "Modelling"
 author: "Jono Tuke"
-date: "`r Sys.Date()`"
+date: "Dec 2019"
 output: 
   html_document:
     theme: spacelab
@@ -23,7 +23,6 @@ pacman::p_load(
   tidyverse, lubridate, stringr, glue, lme4, lmerTest, 
   multcomp
 )
-source("../code/get_label.R")
 source("../code/visualise_ci.R")
 source("../code/get_cov.R")
 ```
@@ -31,10 +30,7 @@ source("../code/get_cov.R")
 # Read in clean data
 
 ```{r}
-# TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
-# TSH_long  <- read_rds("../data/2019082-02_convert_long.rds")
-# TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
-TSH_long  <- read_rds("../data/20191205-02_convert_long.rds")
+TSH_long  <- read_rds("../data/20191207-02_convert_long.rds")
 ```
 
 
@@ -43,7 +39,6 @@ TSH_long  <- read_rds("../data/20191205-02_convert_long.rds")
 ## Three thyroid tests
 
 We will use a mixed-effect model with the paper ID as a random intercept and thyroid method as a fixed effect. 
-
 Need to convert `Sig` to factor. Also remove missing
 
 ```{r}
@@ -184,8 +179,8 @@ For these, we keep thyroid test and try adding in the given covariate, also try 
 
 ### System
 
-```{r, cache=TRUE}
-system_models  <- get_cov("system")
+```{r}
+system_models  <- get_cov("System")
 system_models %>% arrange(BIC) %>% knitr::kable()
 ```
 
@@ -194,7 +189,7 @@ Best model (BIC) is thyroid test + random intercept.
 
 ### N of subjects
 
-```{r, cache=TRUE}
+```{r}
 N_models  <- get_cov("N_bin")
 N_models %>% arrange(BIC) %>% knitr::kable()
 ```
@@ -203,7 +198,7 @@ Best model (BIC) is thyroid test + random intercept.
 
 ### Number of covariates
 
-```{r, cache=TRUE}
+```{r}
 n_cov_models  <- get_cov("n_cov")
 n_cov_models %>% arrange(BIC) %>% knitr::kable()
 ```
@@ -307,31 +302,14 @@ TSH_long %>%
   knitr::kable()
 ```
 
-
-Need to talk to NB about which to keep. 
-
-Decided that only keep those with number of obs greater than 10. 
-
-```{r}
-TSH_long <- 
-  TSH_long %>% 
-  mutate(
-    style = fct_lump_min(CvQ, min = 10)
-  )
-TSH_long %>% 
-  count(CvQ, style) %>% 
-  knitr::kable()
-```
-
-
 ## Fit all models
 
 ```{r}
 tsh_glmer_M_paperRI  <- glmer(Sig ~ Thyroid_test + (1 | Paper), 
                               data = TSH_long, family = binomial)
-tsh_glmer_M_paper_style_RI  <- glmer(Sig ~ Thyroid_test + (1 | Paper / style), 
+tsh_glmer_M_paper_style_RI  <- glmer(Sig ~ Thyroid_test + (1 | Paper / CvQ), 
                                       data = TSH_long, family = binomial)
-tsh_glmer_M_no_test  <- glmer(Sig ~ 1 + (1 | Paper / style), 
+tsh_glmer_M_no_test  <- glmer(Sig ~ 1 + (1 | Paper / CvQ), 
                               data = TSH_long, family = binomial)
 ```
 
@@ -352,24 +330,15 @@ TSH_long %>%
   count(Sophistication)
 ```
 
-Need to remove NAs
-
-```{r}
-TSH_long_noNA  <- 
-  TSH_long %>% 
-  filter(!is.na(Sophistication))
-```
-
-
 Fit all models
 
 ```{r}
 tsh_glmer_M_paperRI  <- glmer(Sig ~ Thyroid_test + (1 | Paper), 
-                              data = TSH_long_noNA, family = binomial)
+                              data = TSH_long, family = binomial)
 tsh_glmer_M_paper_soph_RI  <- glmer(Sig ~ Thyroid_test + (1 | Paper / Sophistication), 
-                                      data = TSH_long_noNA, family = binomial)
+                                      data = TSH_long, family = binomial)
 tsh_glmer_M_no_test  <- glmer(Sig ~ 1 + (1 | Paper / cohort), 
-                              data = TSH_long_noNA, family = binomial)
+                              data = TSH_long, family = binomial)
 ```
 
 ## Random effects
@@ -380,37 +349,8 @@ First test for whether need sophistication RI:
 anova(tsh_glmer_M_paperRI, tsh_glmer_M_paper_soph_RI)
 ```
 
-Significant random effect
+No sighnificant random intercept. 
 
-## Fixed effect
-
-```{r}
-anova(tsh_glmer_M_paper_soph_RI, tsh_glmer_M_no_test)
-```
-
-So still significant effect of type of test. 
-
-## Final model
-
-```{r}
-summary(tsh_glmer_M_paper_soph_RI)
-```
-
-## Pairwise comparison
-
-```{r}
-summary(glht(tsh_glmer_M_paper_soph_RI, linfct = mcp(Thyroid_test = "Tukey")))
-```
-
-
-# Look at selected systems
-
-```{r}
-high_low_models  <- get_cov("high_low")
-high_low_models %>% arrange(BIC) %>% knitr::kable()
-```
-
-To little data to fit. 
 
 # Apply Devil's Advocate
 
