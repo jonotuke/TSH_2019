@@ -1,7 +1,7 @@
 ---
 title: "Convert to long form"
 author: "Jono Tuke"
-date: "`r Sys.Date()`"
+date: "Dec 2019"
 output: 
   html_document:
     theme: spacelab
@@ -20,13 +20,12 @@ knitr::opts_chunk$set(
 pacman::p_load(
   tidyverse, lubridate, stringr, glue
 )
-source("../code/get_label.R")
 ```
 
 # Read in clean data
 
 ```{r}
-TSH  <- read_rds("../data/20191206-01_cleaning-data.rds")
+TSH  <- read_rds("../data/20191207-01_cleaning-data.rds")
 TSH
 ```
 
@@ -34,12 +33,7 @@ TSH
 
 ```{r}
 TSH  <- TSH %>% ungroup()
-```
-
-# Add ID
-
-```{r}
-TSH$ID  <- seq_along(TSH$Paper)
+TSH
 ```
 
 # Convert to long form
@@ -47,11 +41,6 @@ TSH$ID  <- seq_along(TSH$Paper)
 First take the the significance so row for each significance result. The key measure is made up of two parts - thanks NB for listening - this means that we can split into measure and T4 form
 
 ```{r}
-# TSH_long  <- 
-#   TSH  %>% 
-#   gather(key = "key", value = "value", dplyr::matches("FT4|TSH|T3") ) %>% 
-#   separate(key, into = c("Thyroid_test", "measure")) %>% 
-#   spread(measure, value)
 TSH_long  <-
   TSH %>%
   ungroup() %>% 
@@ -80,8 +69,6 @@ TSH_long <-
 TSH_long %>% 
   count(Thyroid_test_4)
 ```
-
-
 
 # Number of covariates in the model
 
@@ -128,6 +115,6 @@ TSH_long
 # Write data
 
 ```{r}
-write_rds(TSH_long, glue("../data/20191206-02_convert_long.rds"))
+write_rds(TSH_long, glue("../data/20191207-02_convert_long.rds"))
 ```
 

@@ -1,7 +1,7 @@
 ---
 title: "Cleaning of the data"
 author: "Jono Tuke"
-date: "`r Sys.Date()`"
+date: "Dec 2019"
 output: 
   html_document: 
     number_sections: yes
@@ -33,22 +33,6 @@ source("../code/add_cohort.R")
 source("../code/get_DA.R")
 ```
 
-# Nigel's cleaning
-
-Nigel did some cleaning of the original dataset as follows
-
-## 18th March 2019
-
-- Copy Paper ID to all rows involving that paper.
-- Copy Condition to all relevant rows. 
-- Create a new column containing "Continuous", "Quartile" etc.
-- Delete blank rows within a paper, currently left blank rows separating papers to make it easier to read
-- Highlighted any obviously dubious cells/entries in Red, left yellow ones from Stephen for clarification
-- Tidied up "minus" entries - Note that the Confidence Interval notation is not standardised! 
-- Explicitly annotated "plus" with the prior categories
-- Removed "adj" from conditions, where the covariates indicate a deeper analysis
-- Inserted annotations, such as "- male", into the "Condition" description to uniquely identify each test. 
-
 # Read in the data
 
 ```{r}
@@ -61,11 +45,9 @@ TSH
 
 ## Missing rows
 
-Nigel has mentioned that left blank rows between the papers
+Blank rows between papers in excel spreadsheet - remove. 
 
 ```{r}
-TSH %>% filter(is.na(Paper))
-TSH
 TSH  <- 
   TSH %>% 
   filter(!is.na(Paper))
@@ -90,10 +72,6 @@ TSH %>%
   labs(x = NULL, y = "Number of results")
 ```
 
-Not sure about Chaker and Chaker *
-
-Turns out that Chaker * was Chaker _et al._. All fixed by NB. 
-
 ## Continuous versus quantile
 
 First rename to make easier
@@ -108,12 +86,6 @@ TSH  <-
 TSH %>% 
   count(CvQ)
 ```
-
-I assume that `quartile analysis` and `Quartile analysis` are the same so collapse, similar process for others. This has been fixed by NB in raw data file. 
-
-Will map `dichotomised` to `Dichotomous`
-
-5th Dec 2019: 
 
 Use the following set of mappings:
 
@@ -132,29 +104,9 @@ TSH  <-
   )
 ```
 
-
 ```{r}
 TSH %>% 
   count(CvQ)
-```
-
-## Condition and restrictions on cohorts
-
-This is no longer needed so ignore
-
-
-### Keep for future notes
-
-Lots of mis-spelling etc. Will use the methods of key collision and ngram fingerprints to correct. This is done by the `refinr` package
-
-<https://cran.r-project.org/web/packages/refinr/vignettes/refinr-vignette.html>. 
-
-These methods come from openrefine - see also
-
-<https://github.com/OpenRefine/OpenRefine/wiki/Clustering-In-Depth>
-
-
-```{r code=readLines("../code/clean_levels.R"), eval = FALSE}
 ```
 
 ## Condition
@@ -164,7 +116,7 @@ TSH %>%
   count(`Condition Classification`)
 ```
 
-Mentioned by NB that some like `other` will appear in multiple systems
+Some conditions, e.g., are present for more than one system.
 
 ```{r}
 TSH %>% 
@@ -183,58 +135,6 @@ TSH  <- TSH %>%
 TSH %>% 
   select(System, `Condition Classification`, condition)
 ```
-
-
-
-## Condition mapper
-
-No longer needed. 
-
-First we read in the mapper:
-
-```{r}
-# condition_mapper  <- read_excel("../data/20190324_condition_mapper.xlsx")
-# condition_mapper %>% kable()
-```
-
-Function to convert condition to system
-
-```{r, fig.asp=5}
-# cond_to_system  <- function(x, mapper){
-#   x  <- str_to_lower(x)
-#   mapper$condition  <- str_to_lower(mapper$condition)
-#   systems  <- unique(mapper$system)
-#   n_systems  <- length(systems)
-#   N  <- length(x)
-#   M  <- matrix(rep(0, n_systems * N), nc = n_systems, nr = N)
-#   colnames(M)  <- systems
-#   for(i in 1:n_systems){
-#     conditions  <- 
-#       mapper %>% filter(system == systems[i]) %>% 
-#       pull(condition)
-#     for(j in conditions){
-#       M[,i]  <- M[,i] + str_detect(x, j)
-#     }    
-#   }
-#   M  <- pmin(M, 1)
-#   get_system  <- function(row){
-#     if(sum(row) == 0){
-#       return("other")
-#     } else if(sum(row) == 1){
-#       return(names(row[row == 1]))
-#     } else {
-#       return("mixed")
-#     }
-#   }
-#   return(apply(M, 1, get_system))
-# }
-# 
-# TSH$system  <- cond_to_system(TSH$Condition, condition_mapper)
-# TSH %>% 
-#   filter(system == "other") %>% 
-#   pull(Condition) %>% unique()
-```
-
 
 ## System
 
@@ -300,7 +200,7 @@ TSH  <-
 TSH %>% count(FT4_Sig)
 ```
 
-Not sure what N* is. NB has found that N* are inferred, but fine. Will convert and add inferred column
+Convert `N*` to `N`. 
 
 ```{r code=readLines("../code/get_inferred.R"), eval = FALSE}
 ```
@@ -328,8 +228,6 @@ Function to take PV column and convert to PV, OR CI, and count CI.
 clean_pv(TSH$FT4_PV, check = TRUE)
 ```
 
-Nigel - you need to check and edit these. 
-
 ```{r}
 pv  <- clean_pv(TSH$FT4_PV)
 pv  <- pv %>% select(-origin_x)
@@ -338,8 +236,6 @@ TSH  <-
   TSH %>% 
   bind_cols(pv)
 ```
-
-Have removed CI, and converted $< p $ to p. 
 
 ```{r}
 TSH %>% 
@@ -376,13 +272,7 @@ TSH  <- TSH %>%
   mutate(TSH_N = clean_n(TSH_N))
 ```
 
-```{r}
-TSH
-```
-
-
 ## TSH_method
-
 
 ```{r}
 clean_levels(TSH$TSH_method, check = TRUE)
@@ -415,9 +305,6 @@ table(TSH$TSH_Sig, TSH$TSH_inferred)
 ```{r}
 clean_pv(TSH$TSH_PV, check = TRUE)
 ```
-
-**NB**: Please correct
-
 
 ```{r}
 pv  <- clean_pv(TSH$TSH_PV)
@@ -479,12 +366,6 @@ TSH  <-
 ```{r}
 TSH %>% 
   count(T3_Sig)
-```
-
-Convert not stated to NA
-
-```{r}
-TSH$T3_Sig[TSH$T3_Sig == "not stated"]  <- NA
 ```
 
 ```{r}
@@ -554,16 +435,6 @@ TSH  <-
   TSH %>% 
   rename(
     T3_total = `T3 - Free or Total`
-  )
-```
-
-Convert `free` to `Free`
-
-```{r}
-TSH  <- 
-  TSH %>% 
-  mutate(
-    T3_total = str_to_title(T3_total)
   )
 ```
 
@@ -676,13 +547,10 @@ TSH %>%
   select(Paper, FT4_N, FT4_cov)
 ```
 
-
-
-
 # Save clean data
 
 ```{r}
-write_rds(TSH, glue("../data/20191206-01_cleaning-data.rds"))
+write_rds(TSH, glue("../data/20191207-01_cleaning-data.rds"))
 ```
 
 
