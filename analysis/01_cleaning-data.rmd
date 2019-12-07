@@ -52,29 +52,10 @@ Nigel did some cleaning of the original dataset as follows
 # Read in the data
 
 ```{r}
-# TSH  <- read_excel("../data/20190318_excel tsh_2019_data.xlsx")
-# TSH  <- read_excel("../raw data/20190519_excel tsh_2019_data.xlsx")
-# TSH  <- read_excel("../raw data/20190708_excel tsh_2019_data.xlsx")
-# TSH  <- read_excel("../raw data/20190714_excel tsh2_2019_data.xlsx")
-# TSH  <- read_excel("../raw data/20191107_excel TSH.xlsx")
-# TSH  <- read_excel("../raw data/20191205_excel TSH.xlsx")
-# TSH  <- read_excel("../raw data/20191205_excel TSH V2.xlsx")
-TSH  <- read_excel("../raw data/20191206_excel TSHV2.xlsx")
+TSH  <- read_excel("../raw data/20191206_excel TSHV3.xlsx")
 TSH
 ```
 
-New column - Column X called `...26` by R. 
-
-```{r}
-TSH$...26[1:5]
-```
-
-Seems to be nothiing so remove
-
-```{r}
-TSH  <- 
-  TSH %>% select(-...26)
-```
 
 # Cleaning of the data
 
