@@ -57,21 +57,23 @@ Nigel did some cleaning of the original dataset as follows
 # TSH  <- read_excel("../raw data/20190708_excel tsh_2019_data.xlsx")
 # TSH  <- read_excel("../raw data/20190714_excel tsh2_2019_data.xlsx")
 # TSH  <- read_excel("../raw data/20191107_excel TSH.xlsx")
-TSH  <- read_excel("../raw data/20191205_excel TSH.xlsx")
+# TSH  <- read_excel("../raw data/20191205_excel TSH.xlsx")
+# TSH  <- read_excel("../raw data/20191205_excel TSH V2.xlsx")
+TSH  <- read_excel("../raw data/20191206_excel TSHV2.xlsx")
 TSH
 ```
 
-New column - Column X called `...24` by R. 
+New column - Column X called `...26` by R. 
 
 ```{r}
-TSH$...24[1:5]
+TSH$...26[1:5]
 ```
 
 Seems to be nothiing so remove
 
 ```{r}
 TSH  <- 
-  TSH %>% select(-...24)
+  TSH %>% select(-...26)
 ```
 
 # Cleaning of the data
@@ -89,7 +91,6 @@ TSH  <-
 TSH
 ```
 
-So drop from 922 rows to 856 
 
 ## Add an ID
 
@@ -156,20 +157,12 @@ TSH %>%
   count(CvQ)
 ```
 
-## Condition
+## Condition and restrictions on cohorts
 
-Column condition has had name change - change back
+This is no longer needed so ignore
 
-```{r}
-TSH  <- 
-  TSH %>% 
-  rename(Condition = `Condition and restrictions on cohorts`)
-```
 
-```{r}
-TSH %>% 
-  count(Condition)
-```
+### Keep for future notes
 
 Lots of mis-spelling etc. Will use the methods of key collision and ngram fingerprints to correct. This is done by the `refinr` package
 
@@ -183,76 +176,94 @@ These methods come from openrefine - see also
 ```{r code=readLines("../code/clean_levels.R"), eval = FALSE}
 ```
 
-```{r}
-clean_levels(TSH$Condition, check = TRUE)
-blacklist  <- c("Breast cancer BMI>25", 
-                "Breast cancer BMI >25", 
-                "fatty liver-men U/s+ ALT+", 
-                "Fatty liver women U/s+ ALT+"
-                )
-clean_levels(TSH$Condition, check = TRUE, blacklist = blacklist)
-```
-
-So looks reasonable so change
-
-Some not to be changed, 
+## Condition
 
 ```{r}
-TSH  <- 
-  TSH %>% mutate(
-  Condition = clean_levels(Condition, blacklist = blacklist)
-)
+TSH %>% 
+  count(`Condition Classification`)
 ```
+
+Mentioned by NB that some like `other` will appear in multiple systems
+
+```{r}
+TSH %>% 
+  count(`Condition Classification`, System)
+```
+
+So we will create a condition that is of the form:
+
+- `system : condition`
+
+```{r}
+TSH  <- TSH %>% 
+  mutate(
+    condition = str_c(System, ":", `Condition Classification`)
+  ) 
+TSH %>% 
+  select(System, `Condition Classification`, condition)
+```
+
+
 
 ## Condition mapper
+
+No longer needed. 
 
 First we read in the mapper:
 
 ```{r}
-condition_mapper  <- read_excel("../data/20190324_condition_mapper.xlsx")
-condition_mapper %>% kable()
+# condition_mapper  <- read_excel("../data/20190324_condition_mapper.xlsx")
+# condition_mapper %>% kable()
 ```
 
 Function to convert condition to system
 
 ```{r, fig.asp=5}
-cond_to_system  <- function(x, mapper){
-  x  <- str_to_lower(x)
-  mapper$condition  <- str_to_lower(mapper$condition)
-  systems  <- unique(mapper$system)
-  n_systems  <- length(systems)
-  N  <- length(x)
-  M  <- matrix(rep(0, n_systems * N), nc = n_systems, nr = N)
-  colnames(M)  <- systems
-  for(i in 1:n_systems){
-    conditions  <- 
-      mapper %>% filter(system == systems[i]) %>% 
-      pull(condition)
-    for(j in conditions){
-      M[,i]  <- M[,i] + str_detect(x, j)
-    }    
-  }
-  M  <- pmin(M, 1)
-  get_system  <- function(row){
-    if(sum(row) == 0){
-      return("other")
-    } else if(sum(row) == 1){
-      return(names(row[row == 1]))
-    } else {
-      return("mixed")
-    }
-  }
-  return(apply(M, 1, get_system))
-}
-
-TSH$system  <- cond_to_system(TSH$Condition, condition_mapper)
-TSH %>% 
-  filter(system == "other") %>% 
-  pull(Condition) %>% unique()
+# cond_to_system  <- function(x, mapper){
+#   x  <- str_to_lower(x)
+#   mapper$condition  <- str_to_lower(mapper$condition)
+#   systems  <- unique(mapper$system)
+#   n_systems  <- length(systems)
+#   N  <- length(x)
+#   M  <- matrix(rep(0, n_systems * N), nc = n_systems, nr = N)
+#   colnames(M)  <- systems
+#   for(i in 1:n_systems){
+#     conditions  <- 
+#       mapper %>% filter(system == systems[i]) %>% 
+#       pull(condition)
+#     for(j in conditions){
+#       M[,i]  <- M[,i] + str_detect(x, j)
+#     }    
+#   }
+#   M  <- pmin(M, 1)
+#   get_system  <- function(row){
+#     if(sum(row) == 0){
+#       return("other")
+#     } else if(sum(row) == 1){
+#       return(names(row[row == 1]))
+#     } else {
+#       return("mixed")
+#     }
+#   }
+#   return(apply(M, 1, get_system))
+# }
+# 
+# TSH$system  <- cond_to_system(TSH$Condition, condition_mapper)
+# TSH %>% 
+#   filter(system == "other") %>% 
+#   pull(Condition) %>% unique()
 ```
 
 
-I have changed BP, insulin, and diabetes to metabolic. 
+## System
+
+```{r}
+TSH %>% count(System) %>% 
+  ggplot(aes(fct_reorder(System, n), n)) + 
+  geom_bar(stat = 'identity') + 
+  labs(x = "System")
+```
+
 
 ## FT4_N
 
@@ -690,7 +701,7 @@ TSH %>%
 # Save clean data
 
 ```{r}
-write_rds(TSH, glue("../data/20191205-01_cleaning-data.rds"))
+write_rds(TSH, glue("../data/20191206-01_cleaning-data.rds"))
 ```
 
 

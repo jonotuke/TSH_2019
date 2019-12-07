@@ -158,4 +158,38 @@ Meeting with NB
     a. Matched pairs within each paper comparing FT4 and TSH
     b. RE modelling to account for standard causes of heterogenecity. 
     
+    
+# Friday 06 Dec 2019
+
+Email from NB
+
+```
+Hi Jono,
+
+I had a good meeting with Stephen. We spent a lot of the time inserting a new column called “System” which defines the system for each result. We also added in a new column called “Condition” which classifies all the results within each “System” into a smaller group of “Conditions”.
+
+Can you use the System column for all the System analysis (esp the figure in Section 2.2 of 03)?
+
+For the meta-analysis calculations, could you use the Condition within System classification to determine the number of results that could potentially be merged in a meta-analysis (note there are some repeated categories (i.e. other) within different Systems, which are obviously different).
+
+If the results are still viable, he would like only the Free T3 results to be used for T3, as that is what is measured clinically. Of course, if we lose too much power, then we may have to merge them back.
+
+He is also worried about reverse-causation from cross-sectional studies and ones that have incongruous conclusions (i.e. High TSH and High FT4 both associated with the same condition). This is the meaning of the final set of columns that we have so far ignored. He would like an analysis where we remove all *papers* with any incongruity (i.e. keep only the papers which are entirely. “0” in their “TSH incong” column) and from the remaining papers, only keep the results that are “N” in the "cross-section” column.
+
+Then there is the writing stuff, as discussed.
+
+Thanks very much,
+
+Nigel.
+```
+  
+```
+Hi Jono,
+
+I found and sorted a few more issues with the data and the final version is no in the dropbox. I added another column (sorry) entitled “include” which provides one column indicating whether to include the result in the refined analysis, or not. I thought it was needed for the public version of the data so decided to just do it. That means you can ignore the “TSH incong” and “cross-section” columns, and we will probably delete them from the public version.
+
+Thanks,
+
+Nigel.
+```
   

@@ -33,7 +33,7 @@ source("../code/visualise_ci.R")
 # TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
 # TSH_long  <- read_rds("../data/2019082-02_convert_long.rds")
 # TSH_long  <- read_rds("../data/20191202-02_convert_long.rds")
-TSH_long  <- read_rds("../data/20191205-02_convert_long.rds")
+TSH_long  <- read_rds("../data/20191206-02_convert_long.rds")
 TSH_long
 ```
 
@@ -66,7 +66,14 @@ ggplot(overall_ci, aes( Thyroid_test, p, col = Thyroid_test)) +
 ## System
 
 ```{r}
-visualise_ci(TSH_long, system)
+visualise_ci(TSH_long, System)
+```
+
+
+## System
+
+```{r}
+visualise_ci(TSH_long, condition)
 ```
 
 ## Method
@@ -140,11 +147,6 @@ ggplot(overall_ci, aes( Thyroid_test_4, p, col = Thyroid_test_4)) +
   labs(y = "Proportion")
 ```
 
-## High / low classification
-
-```{r}
-visualise_ci(TSH_long, high_low)
-```
 
 ## Hyper / hypo
 

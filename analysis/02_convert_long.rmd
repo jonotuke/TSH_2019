@@ -26,7 +26,7 @@ source("../code/get_label.R")
 # Read in clean data
 
 ```{r}
-TSH  <- read_rds("../data/20191205-01_cleaning-data.rds")
+TSH  <- read_rds("../data/20191206-01_cleaning-data.rds")
 TSH
 ```
 
@@ -81,22 +81,6 @@ TSH_long %>%
   count(Thyroid_test_4)
 ```
 
-# Add in high low classification of systems
-
-Based on classification by SF. 
-
-```{r}
-TSH_long <- 
-  TSH_long %>% 
-  mutate(high_low = case_when(
-    str_detect(Condition, "AF") ~ "high", 
-    str_detect(Condition, "low bone density") ~ "high", 
-    system == "cancer" ~ "high", 
-    str_detect(Condition, "fatty liver") ~ "low", 
-    system == "metabolic" ~ "low", 
-    TRUE ~ "both"
-  ))
-```
 
 
 # Number of covariates in the model
@@ -144,6 +128,6 @@ TSH_long
 # Write data
 
 ```{r}
-write_rds(TSH_long, glue("../data/20191205-02_convert_long.rds"))
+write_rds(TSH_long, glue("../data/20191206-02_convert_long.rds"))
 ```
 
