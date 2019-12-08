@@ -30,9 +30,7 @@ theme_set(theme_bw())
 # Read in clean data
 
 ```{r}
-# TSH_long  <- read_rds("../data/20190716-02_convert_long.rds")
-# TSH_long  <- read_rds("../data/2019082-02_convert_long.rds")
-TSH_long  <- read_rds("../data/20191202-02_convert_long.rds")
+TSH_long  <- read_rds("../data/20191207-02_convert_long.rds")
 TSH_long
 ```
 
@@ -51,7 +49,7 @@ get_prop  <- function(df, pred){
     spread(Thyroid_test, p) %>% 
     filter(TSH > FT4 | TSH > T3)
 }
-get_prop(TSH_long, Condition)
-get_prop(TSH_long, system)
+get_prop(TSH_long, condition)
+get_prop(TSH_long, System)
 ```
 
