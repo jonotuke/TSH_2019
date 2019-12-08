@@ -26,7 +26,7 @@ pacman::p_load(tidyverse)
 # Read in data
 
 ```{r}
-TSH_long  <- read_rds('../data/20191205-02_convert_long.rds')
+TSH_long  <- read_rds('../data/20191207-02_convert_long.rds')
 TSH_long
 ```
 
@@ -35,13 +35,133 @@ TSH_long
 First find all analysis that have both OR and ORCI
 
 ```{r}
-TSH_long_OR  <- TSH_long %>% filter(!is.na(OR), !is.na(ORCI))
+TSH_long_OR  <- 
+  TSH_long %>% 
+  filter(!is.na(OR), !is.na(ORCI))
 TSH_long_OR
 ```
 
+Next, we look at the ORs
+
 ```{r}
-TSH_long_OR %>% count(system, method, Thyroid_test) %>% ggplot(aes(Thyroid_test, n)) + 
-  geom_bar(stat = 'identity', aes(fill = method), position = 'dodge', col = 'black') + 
-  facet_wrap(~system, scales = "free_y") + theme(legend.position = 'bottom')
+TSH_long_OR %>% ggplot(aes(OR)) + geom_histogram(col = "black", fill = "orange")
 ```
 
+First this should be positive, so need to filter
+
+```{r}
+TSH_long_OR  <- 
+  TSH_long_OR %>% filter(OR > 0)
+```
+
+```{r}
+TSH_long_OR %>% ggplot(aes(OR)) + geom_histogram(col = "black", fill = "orange")
+```
+
+These now seem reasonable. 
+
+
+# Cleaning
+
+We are going to examine thyroid tests within condition and method. 
+
+## Thyroid test
+
+All fine, but not many results for T3
+
+```{r}
+TSH_long_OR %>% 
+  count(Thyroid_test)
+```
+
+## Condition
+
+This was cleaned before so should be fine. 
+
+```{r}
+TSH_long_OR %>% 
+  count(condition)
+```
+
+## Method
+
+We did not clean this earlier as there were too many levels. Now we are focused on OR, it is an easier problem. 
+
+```{r}
+TSH_long_OR %>% 
+  count(method)
+```
+
+Looking at this list, we will convert to the following levels:
+
+- Cox PH, 
+- GEE, 
+- linear regression,
+- logistic regression, and 
+- other. 
+
+For the case of cox + log req, I will classify as other. 
+
+```{r}
+TSH_long_OR <- 
+  TSH_long_OR %>% 
+  mutate(
+    method_clean = 
+      case_when(
+        str_detect(method, "\\+") ~ 'other', 
+        str_detect(method, "Cox") ~ 'Cox PH', 
+        str_detect(method, "GEE") ~ 'GEE', 
+        str_detect(method, "linear") ~ 'linear regression', 
+        str_detect(method, "log") ~ 'logistic regression', 
+        TRUE ~ 'other'
+      )
+  )
+```
+
+```{r}
+TSH_long_OR %>% 
+  count(method, method_clean)
+```
+
+
+# Meta-analysis analysis
+
+To perform a meta-analysis, we will look at just one result per paper. So, next we consider if there are enough cases. 
+
+## Condition
+
+```{r}
+papers_condition  <- 
+  TSH_long_OR %>% 
+  group_by(condition, method_clean, Thyroid_test) %>% 
+  summarise(n_papers = length(unique(Paper)))
+papers_condition
+```
+
+```{r, fig.asp = 6}
+papers_condition %>% 
+  ggplot(aes(Thyroid_test, n_papers)) + 
+  geom_bar(stat = 'identity', aes(fill = method_clean), position = 'dodge') + 
+  facet_wrap(~condition, ncol = 2)
+```
+
+So the only meta-analysis we could consider is for mortality, but the problem is that we would only be able to perform it for free T4 and hence, have nothing to really compare it to. 
+
+## System
+
+```{r}
+papers_system  <- 
+  TSH_long_OR %>% 
+  group_by(System, method_clean, Thyroid_test) %>% 
+  summarise(n_papers = length(unique(Paper)))
+papers_system
+```
+
+```{r, fig.asp = 2}
+papers_system %>% 
+  ggplot(aes(Thyroid_test, n_papers)) + 
+  geom_bar(stat = 'identity', aes(fill = method_clean), position = 'dodge') + 
+  facet_wrap(~System, ncol = 2)
+```
+
+Still nothing that could be used in a meta-analysis. 
