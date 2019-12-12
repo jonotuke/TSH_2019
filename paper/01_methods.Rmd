@@ -3,16 +3,16 @@ title: "Methods section"
 author: "Jono Tuke"
 date: "08/12/2019"
 output:
-  word_document: default
   html_document:
     number_sections: yes
     theme: spacelab
+  word_document: default
 bibliography: methods.bib
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  echo = TRUE, 
+  echo = FALSE, 
   fig.width = 6, 
   fig.asp = 0.618, 
   out.width = "70%",
@@ -29,24 +29,24 @@ The majority of the cleaning was to ensure consistency of the levels within the 
 
 # Methods
 
-To model the difference between the different thyroid tests with respect to their predictive power for a variety of conditions, we used a mixed effects modelling methodology The methodology will allow us to compensate for the fact that we have more than one result in the papers considered. The modelling was performed using the `lme4` package [@lme42019] and the `lmerTest` package [@lmerTest2019]. 
+To model the difference between the different thyroid tests (FT4, TSH or FT3) with respect to their predictive power for a variety of conditions, we used a mixed effects modelling methodology. This methodology allows us to compensate for the fact that we have more than one result in the papers considered. The modelling was performed using the `lme4` package [@lme42019] and the `lmerTest` package [@lmerTest2019]. 
 
-In each case, we classified each results in a paper as showing a significant results or a non-significant result. By a significant result, we mean that a given thyroid test has been shown to be associated with a given condition at a 5% significance level. We treated the result as a binary response variable with the levels success (significant) and failure (non-significant). 
+In each case, we classified each result in a paper as showing a significant result or a non-significant result. By a significant result, we mean that a given thyroid test has been shown to be associated with a given condition at a 5% significance level. We treated the result as a binary response variable with the levels success (significant) and failure (non-significant). 
 
-In each model, we accounted for the observation of multiple results within the same paper by incorporating a random intercept for each paper. The necessity of the random intercept was performed with an likelihood ratio test and also confirmed with the Bayesian Information Criterion (BIC) [@schwarz1978]. 
+In each model, we accounted for the observation of multiple results within the same paper by incorporating a random intercept for each paper. The necessity of the random intercept was determined by a likelihood ratio test and also confirmed with the Bayesian Information Criterion (BIC) [@schwarz1978]. 
 
-The thyroid test was incorporated in the model as a fixed effect predictor. This was also tested for with a likelihood ratio test and BIC. 
+The thyroid test (FT4, TSH or FT3)was incorporated in the model as a fixed effect predictor. This was also tested for significance with a likelihood ratio test and BIC. 
 
 For significant models, we also calculate the Tukey pairwise comparisons between the thyroid tests using the `multcomp` package [@multcomp2019]. 
 
-We were also concerned about the potential predictive power of other covariates. We considered system each condition was within - as classified by the authors Stephen Fitzgerald and Nigel Bean; the number of subjects in the analysis; and the number of covariates in the model of the analysis. For each of these covariates, we considered six models: 
+We were also concerned about the potential predictive power of other covariates. We considered the clinical ``system" (eg Cardiac, Bone, Pregnancy) each condition pertained to - as classified by the physician author SF; the number of subjects in the analysis; and the number of covariates in the model of the analysis. For each of these covariates, we considered six models: 
 
-1. just thyroid test, 
-2. just thyroid test with random intercept for paper, 
-3. thyroid test and covariate, 
-4. thyroid test and covariate with random intercept for paper,
-5. thyroid test and covariate and interaction between thyroid test and covariate, and
-6. thyroid test and covariate and interaction between thyroid test and covariate with random intercept for paper. 
+1. thyroid test, 
+2. thyroid test with random intercept for paper, 
+3. thyroid test and stated covariate, 
+4. thyroid test and stated covariate with random intercept for paper,
+5. thyroid test and stated covariate and interaction between thyroid test and covariate, and
+6. thyroid test and stated covariate and interaction between thyroid test and covariate with random intercept for paper. 
 
 The best model was chosen with BIC. 
 
@@ -54,14 +54,178 @@ As we have further dependencies within each paper: the cohort used for the analy
 
 The final attempt to account for dependency we called the "Devil's advocate" method. For each of the following strata: 
 
-1. small number of subject, simple model;
-2. small number of subject, large model;
-3. large number of subject, simple model; and 
-4. large number of subject, large model, 
+1. smallest number of subjects, simple model;
+2. smallest number of subjects, complex model;
+3. largest number of subjects, simple model; and 
+4. largest number of subjects, complex model, 
 
 we randomly selected one analysis from each paper to represent the strata. We then performed a logistic regression with significance as the response variable and thyroid test as the predictor. 
+
 # Meta-analysis
 
-The obvious question is why this complicated approach - why not simply perform a meta-analysis. First, fundamentally, meta-analysis answers the wrong question. If we will solely interested in the predictive power of an single thyroid test with regards to a single condition, then we would use meta-analysis, but we are considering a more general question - which thyroid test is most predictive of disease states. Given this, we still did consider a meta-analysis. To recap, to perform a meta-analysis will need to compare like to like, that is we would need to select only those analyses that correspond to the same condition, and using the same analytic methodology. Unfortunately, we found that once you take into account condition and methodology, there are very few results with at least two thyroid conditions to compare, thus rendering meta-analysis insufficient to answer our question. 
+The obvious question is why pursue this complicated approach - why not simply perform a traditional meta-analysis? Fundamentally, meta-analysis answers the wrong question. If we were solely interested in the predictive power of a single thyroid test with regards to a single condition, then we would use a traditional meta-analysis, but we are considering a more general question - which thyroid test is most predictive of a wide class of conditions.  To recap, to perform a traditional meta-analysis we would need to compare like to like, that is we would need to select only those analyses that correspond to the same condition (eg Atrial Fibriliation or Breast Cancer), and using the same analytic methodology (eg Cox's Proportional Hazard, or Pearson's correlation coefficient). Given that explanation, we still did consider a traditional meta-analysis. Unfortunately, we found that once you count the number of papers considering the same condition and using the same methodology, there are very few condition-method pairs with at least two papers to compare, thus rendering meta-analysis incapable of making a contribution to answering our question. 
+
+# Results
+
+## Overall
+
+```{r, include=FALSE}
+tsh  <- read_rds("../data/20191207-01_cleaning-data.rds")
+tsh_long  <- read_rds("../data/20191207-02_convert_long.rds")
+n_papers  <- length(unique(tsh$Paper))
+n_results  <- nrow(tsh_long)
+summary(tsh_long$N)
+```
+
+There are `r n_papers` papers in total, with a total of `r n_results` results. The number of subjects in the various analyses are summarise below
+
+```{r}
+summary(tsh_long$N) %>% 
+  broom::glance() %>% 
+  knitr::kable()
+```
+
+The observed results for the considered thyroid tests are given below. 
+
+```{r}
+tsh_long %>% 
+  count(Thyroid_test, Sig) %>% 
+  filter(!is.na(Sig)) %>% 
+  group_by(Thyroid_test) %>% 
+  mutate(total = sum(n)) %>% 
+  pivot_wider(values_from = n, names_from = Sig) %>% 
+  select(Thyroid_test, Y,  N, total) %>% 
+  knitr::kable()
+```
+
+And the equivalent as proportions
+
+```{r}
+tsh_long %>% 
+  count(Thyroid_test, Sig) %>% 
+  filter(!is.na(Sig)) %>% 
+  group_by(Thyroid_test) %>% 
+  mutate(
+    total = sum(n), 
+    prop = n / total) %>% 
+  select(-n, -total) %>% 
+  pivot_wider(values_from = prop, names_from = Sig) %>% 
+  knitr::kable(digits = 2)
+```
+
+The 95% confidence interval for the population proportions are given below (asymptotic normality confidence interval were used).
+
+```{r}
+overall_ci  <- 
+  tsh_long %>% 
+  filter(!is.na(Sig)) %>% 
+  group_by(Thyroid_test) %>% 
+  summarise(
+    n_sig = sum(Sig == "Y"), 
+    N = n(), 
+    p = n_sig / N,
+    lwr = p - 1.96 * sqrt(p * (1 - p) / N),
+    upr = p + 1.96 * sqrt(p * (1 - p) / N)
+  )
+overall_ci %>% 
+  knitr::kable(digits = 2)
+```
+
+These are illustrated in the following figure
+
+```{r}
+ggplot(overall_ci, aes( Thyroid_test, p, col = Thyroid_test)) + 
+  geom_point() + 
+  geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0.1) + 
+  theme(legend.position = "none") + 
+  labs(y = "Proportion")
+```
+
+We see that both Free T4 and T3 have statistically higher significant results compared to TSH. There is no discernible difference between Free T4 and T3. 
+
+Figures of the 95% confidence interval of the proportion of significant results for each of the different thyroid tests are also given stratified by
+
+- system, 
+- condition, 
+- analysis methodology, 
+- cohourt size, 
+- and number of covariates in the analysis
+
+are given in the Appendix. 
+
+
+We also seperated T3 into free T3 and total T3. The figure is given below. We see that total T3 has a statistically higher proportion of significant results compared to free T3. 
+
+```{r}
+overall_ci  <- tsh_long %>% 
+  filter(str_detect(Thyroid_test_4, "T3")) %>% 
+  filter(!is.na(Sig)) %>% 
+  group_by(Thyroid_test_4) %>% 
+  summarise(
+    n_sig = sum(Sig == "Y"), 
+    N = n(), 
+    p = n_sig / N,
+    lwr = p - 1.96 * sqrt(p * (1 - p) / N),
+    upr = p + 1.96 * sqrt(p * (1 - p) / N)
+  )
+combinded  <- tibble(
+  Thyroid_test_4 = "Combined", 
+  n_sig = sum(overall_ci$n_sig),
+  N = sum(overall_ci$N)
+) %>% 
+  mutate(
+    p = n_sig / N,
+    lwr = p - 1.96 * sqrt(p * (1 - p) / N),
+    upr = p + 1.96 * sqrt(p * (1 - p) / N)
+  )
+ggplot(overall_ci, aes( Thyroid_test_4, p, col = Thyroid_test_4)) + 
+  geom_point() + 
+  geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0.1) + 
+  theme(legend.position = "none") + 
+  geom_point(aes(Thyroid_test_4, p), data = combinded, shape = 17, size = 3) + 
+  geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0.1, data = combinded, linetype = "dashed", size = 1) + 
+  labs(y = "Proportion")
+```
+
+## Thyroid test as predictor. 
+
+It was necessary to incorporate a random intercept for paper in the model (P-value $< 2.2\times 10^{-16}$). There is a statistically significant effect of thyroid test in predicting a results significance (P-value $< 2.2\times 10^{-16}$). Post-hoc pairwise comparisons show that there is a statistically higher proportion of significant results for free T4 compared to TSH (P- value $< 1 \times 10^{-5}$), and also a statistically higher proportion of significant results for T3 compared to TSH (P- value $< 1 \times 10^{-5}$). These results confirm those illustrated in the CI plots. 
+
+## Thyroid test as predictor with T3 stratified into total T3 and free T3. 
+
+
+Again we found a statistically significant random intercept for paper (P-value $< 2.2\times 10^{-16}$), and a significant predictive effect of thyroid test (P-value $< 2.2\times 10^{-16}$)
+
+Pairwise comparisons reveal the following significant results:
+
+- Free T4 higher than TSH (P-value < 0.001), 
+- Free T3 higher than TSH (P-value < 0.001), and
+- Total T3 higher than TSH (P-value < 0.001). 
+
+## Incorporation of other covariates 
+
+We found that the additional main effects of system, cohort size, and number of covaraites did not improve the predictive effect of the model compared one with just thyroid test (based on minimising BIC). 
+
+
+## Further nested random intercepts
+
+We found that a nested random effects structure of cohort within paper did improve the fit of the model, but did not change the observed effects of thyroid tests to that given above. 
+
+## Devils advocate. 
+
+In all four Devil's advocate model, we found a statisitcally significant effect of thyroid test on the proportion of statistically significant results. The P-values are given in the following table. 
+
+```{r}
+tab  <- tribble(
+  ~Model, ~`P-value`, 
+"smallest number of subjects, simple model",0.0001891,
+"smallest number of subjects, complex model",0.000773,
+"largest number of subjects, simple model",0.01126,
+"largest number of subjects, complex model",0.0006587
+)
+tab %>% 
+  knitr::kable()
+```
+
 
 # References
