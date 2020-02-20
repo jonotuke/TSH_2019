@@ -1,5 +1,5 @@
 ---
-title: "CI plots"
+title: "Paper Figures"
 author: "Jono Tuke"
 date: "`r Sys.Date()`"
 output: 
@@ -25,7 +25,8 @@ pacman::p_load(
 source("../code/get_label.R")
 source("../code/visualise_ci.R")
 theme_set(theme_bw())
-dpi  <- 100
+dpi  <- 150
+theme_update(plot.title = element_text(hjust = 0.5))
 ```
 
 # Read in clean data
@@ -67,7 +68,7 @@ ggplot(overall_ci, aes( Thyroid_test, p, col = Thyroid_test)) +
   geom_point() + 
   geom_errorbar(aes(ymin = lwr, ymax = upr), width = 0.1) + 
   theme(legend.position = "none") + 
-  labs(y = "Proportion of results that showed a statistically \nsignificant association with clinical parameters.", x = "Thyroid test") + 
+  labs(title = "Figure 2",y = "Proportion of results that showed a statistically \nsignificant association with clinical parameters.", x = "Thyroid test") + 
   scale_x_discrete(label = c("Free T4", "Free T3 / Total T3", "TSH")) + 
   theme(text = element_text(family = "Times New Roman", size = 12))
 ```
@@ -81,13 +82,13 @@ ggsave("../figs/Figure_2.tiff", width = 6, height = 6, dpi = dpi)
 ```{r}
 p  <- visualise_ci(TSH_long, N_bin)
 p +
-  labs(y = "Proportion of results that showed a statistically \nsignificant association with clinical parameters.", 
+  labs(title = "Figure 3", y = "Proportion of results that showed a statistically \nsignificant association with clinical parameters.", 
        x = "Number of subjects", 
        col = "Thyroid test") + 
   scale_x_discrete(
-    label = c("0 - 1010", "1011 - 1580", 
-              "1581 - 2390", "2391 - 3650", 
-              "3651 - 10314")
+    label = c("18 - 878", "879-1754", 
+              "1755 - 2393", "2394 - 4255", 
+              "4256 - 10990")
   ) + 
   scale_color_discrete(
     label = c("Free T4", "Free T3 / Total T3", "TSH")
@@ -99,19 +100,34 @@ p +
 ggsave("../figs/Figure_3.tiff", width = 6, height = 6, dpi = dpi)
 ```
 
-# Figure 4
+# Figure 5
 
 ```{r}
-p  <- visualise_ci(TSH_long, `hyper/hypo`)
+p  <- visualise_ci(TSH_long, n_cov, angle = 0)
 p +
-  labs(y = "Proportion of results that showed a statistically \nsignificant association with clinical parameters.", 
-       x = NULL, 
+  labs(title = "Figure 5", y = "Proportion of results that showed a statistically \nsignificant association with clinical parameters.", 
+       x = "Number of covariates", 
        col = "Thyroid test") + 
   scale_color_discrete(
     label = c("Free T4", "Free T3 / Total T3", "TSH")
   ) + 
-  scale_x_discrete(
-    label = c("Hyperthyroidism", "Mixed", "Hypothyroidism")
+  theme(text = element_text(family = "Times New Roman", size = 12))
+```
+
+```{r}
+ggsave("../figs/Figure_5.tiff", width = 6, height = 6, dpi = dpi)
+```
+
+# Figure 4
+
+```{r}
+p  <- visualise_ci(TSH_long, System)
+p +
+  labs(title = "Figure 4", y = "Proportion of results that showed a statistically \nsignificant association with clinical parameters.", 
+       x = "System", 
+       col = "Thyroid test") + 
+  scale_color_discrete(
+    label = c("Free T4", "Free T3 / Total T3", "TSH")
   ) + 
   theme(text = element_text(family = "Times New Roman", size = 12))
 ```

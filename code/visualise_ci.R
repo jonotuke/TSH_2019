@@ -11,7 +11,7 @@
 #' @export
 #'
 #' @examples
-visualise_ci  <- function(df, pred, ci = 0.95, width = 0.1, dodge = 0.4, check = FALSE){
+visualise_ci  <- function(df, pred, angle = -90,ci = 0.95, width = 0.1, dodge = 0.4, check = FALSE){
   pd <- position_dodge(width = dodge)
   ## Enquo the column
   pred  <- enquo(pred)
@@ -45,7 +45,7 @@ visualise_ci  <- function(df, pred, ci = 0.95, width = 0.1, dodge = 0.4, check =
     ggplot(aes(!!pred, p, col = Thyroid_test)) + 
     geom_point(position = pd) + 
     geom_errorbar(aes(ymin = lwr, ymax = upr), width = width, position = pd) + 
-    theme(axis.text.x = element_text(angle = -90, hjust=0)) + 
+    theme(axis.text.x = element_text(angle = angle, hjust=0)) + 
     labs(y = "Proportion")
   return(p)
 }

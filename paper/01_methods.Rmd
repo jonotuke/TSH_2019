@@ -1,7 +1,7 @@
 ---
 title: "Methods section"
-author: "Jono Tuke"
-date: "08/12/2019"
+author: "Jono Tuke and Nigel Bean"
+date: "15/12/2019"
 output:
   html_document:
     number_sections: yes
@@ -77,7 +77,7 @@ n_results  <- nrow(tsh_long)
 summary(tsh_long$N)
 ```
 
-There are `r n_papers` papers in total, with a total of `r n_results` results. The number of subjects in the various analyses are summarise below
+There are `r n_papers` papers in total, with a total of `r n_results` results. The number of subjects in the various analyses are summarised below
 
 ```{r}
 summary(tsh_long$N) %>% 
@@ -121,8 +121,8 @@ overall_ci  <-
   filter(!is.na(Sig)) %>% 
   group_by(Thyroid_test) %>% 
   summarise(
-    n_sig = sum(Sig == "Y"), 
     N = n(), 
+    n_sig = sum(Sig == "Y"), 
     p = n_sig / N,
     lwr = p - 1.96 * sqrt(p * (1 - p) / N),
     upr = p + 1.96 * sqrt(p * (1 - p) / N)
@@ -143,7 +143,7 @@ ggplot(overall_ci, aes( Thyroid_test, p, col = Thyroid_test)) +
 
 We see that both Free T4 and T3 have statistically higher significant results compared to TSH. There is no discernible difference between Free T4 and T3. 
 
-Figures of the 95% confidence interval of the proportion of significant results for each of the different thyroid tests are also given stratified by
+Figures of the 95% confidence interval of the proportion of significant results for each of the different thyroid tests stratified by
 
 - system, 
 - condition, 
@@ -154,7 +154,7 @@ Figures of the 95% confidence interval of the proportion of significant results 
 are given in the Appendix. 
 
 
-We also seperated T3 into free T3 and total T3. The figure is given below. We see that total T3 has a statistically higher proportion of significant results compared to free T3. 
+We also separated T3 into free T3 and total T3. The figure is given below. We see that total T3 has a statistically higher proportion of significant results compared to free T3. 
 
 ```{r}
 overall_ci  <- tsh_long %>% 
@@ -187,11 +187,11 @@ ggplot(overall_ci, aes( Thyroid_test_4, p, col = Thyroid_test_4)) +
   labs(y = "Proportion")
 ```
 
-## Thyroid test as predictor. 
+## Thyroid test as predictor
 
-It was necessary to incorporate a random intercept for paper in the model (P-value $< 2.2\times 10^{-16}$). There is a statistically significant effect of thyroid test in predicting a results significance (P-value $< 2.2\times 10^{-16}$). Post-hoc pairwise comparisons show that there is a statistically higher proportion of significant results for free T4 compared to TSH (P- value $< 1 \times 10^{-5}$), and also a statistically higher proportion of significant results for T3 compared to TSH (P- value $< 1 \times 10^{-5}$). These results confirm those illustrated in the CI plots. 
+It was necessary to incorporate a random intercept for paper in the model (P-value $< 2.2\times 10^{-16}$). There is a statistically significant effect of thyroid test in predicting a result's significance (P-value $< 2.2\times 10^{-16}$). Post-hoc pairwise comparisons show that there is a statistically higher proportion of significant results for free T4 compared to TSH (P- value $< 1 \times 10^{-5}$), and also a statistically higher proportion of significant results for T3 compared to TSH (P- value $< 1 \times 10^{-5}$). These results confirm those illustrated in the confidence interval plots. 
 
-## Thyroid test as predictor with T3 stratified into total T3 and free T3. 
+## Thyroid test as predictor with T3 stratified into total T3 and free T3 
 
 
 Again we found a statistically significant random intercept for paper (P-value $< 2.2\times 10^{-16}$), and a significant predictive effect of thyroid test (P-value $< 2.2\times 10^{-16}$)
@@ -204,28 +204,54 @@ Pairwise comparisons reveal the following significant results:
 
 ## Incorporation of other covariates 
 
-We found that the additional main effects of system, cohort size, and number of covaraites did not improve the predictive effect of the model compared one with just thyroid test (based on minimising BIC). 
+We found that the additional main effects of system, cohort size, and number of covariates did not improve the predictive effect of the model, compared to one with just thyroid test (based on minimising BIC). 
 
 
 ## Further nested random intercepts
 
 We found that a nested random effects structure of cohort within paper did improve the fit of the model, but did not change the observed effects of thyroid tests to that given above. 
 
-## Devils advocate. 
+## Devils advocate 
 
-In all four Devil's advocate model, we found a statisitcally significant effect of thyroid test on the proportion of statistically significant results. The P-values are given in the following table. 
+In all four Devil's advocate model, we found a statistically significant effect of thyroid test on the proportion of statistically significant results. Pairwise comparisons reveal that the only signifcant results in all four Devil's advocate models were Free T4 higher than TSH.  The P-values are given in the following table. 
 
 ```{r}
 tab  <- tribble(
-  ~Model, ~`P-value`, 
-"smallest number of subjects, simple model",0.0001891,
-"smallest number of subjects, complex model",0.000773,
-"largest number of subjects, simple model",0.01126,
-"largest number of subjects, complex model",0.0006587
+  ~Model, ~`P-value Thryoid Test`, ~`P-value FT4 > TSH`,
+"smallest number of subjects, simple model",0.0001891,0.000202,
+"smallest number of subjects, complex model",0.000773,"<0.001",
+"largest number of subjects, simple model",0.01126,0.00905,
+"largest number of subjects, complex model",0.0006587,0.000638
 )
 tab %>% 
   knitr::kable()
 ```
+
+## Restricted analysis
+
+We also considered a restricted analysis where we excluded all papers that showed an incongruent result or were cross-sectional analyses. The key difference from the above observations were that the proportion of results that were significant for T3 went from 0.53 to 0.13; the full summary is in the table below. All statistical analyses in terms of the comparison between FT4 and TSH remained consistent in this restricted analysis.
+
+```{r}
+tsh_long  <- 
+  tsh_long %>% 
+  filter(`Include?` == 1)
+
+overall_ci  <- 
+  tsh_long %>% 
+  filter(!is.na(Sig)) %>% 
+  group_by(Thyroid_test) %>% 
+  summarise(
+    N = n(), 
+    n_sig = sum(Sig == "Y"), 
+    p = n_sig / N,
+    lwr = p - 1.96 * sqrt(p * (1 - p) / N),
+    upr = p + 1.96 * sqrt(p * (1 - p) / N)
+  )
+overall_ci %>% 
+  knitr::kable(digits = 2)
+
+```
+
 
 
 # References

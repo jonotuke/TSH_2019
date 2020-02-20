@@ -6,6 +6,9 @@ output:
   html_document:
     theme: spacelab
     number_sections: yes
+    toc_float: yes
+    toc: yes
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}

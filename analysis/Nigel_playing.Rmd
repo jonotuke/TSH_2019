@@ -1,0 +1,94 @@
+---
+title: "Nigel Playing"
+author: "Nigel Bean"
+date: "Dec 2019"
+output: 
+  html_document:
+    theme: spacelab
+    number_sections: yes
+    toc_float: yes
+    toc: yes
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  fig.width = 6, 
+  fig.asp = 0.618, 
+  out.width = "70%",
+  fig.align = "center", 
+  root.dir = '../'
+)
+pacman::p_load(
+  tidyverse, lubridate, stringr, glue, lme4, lmerTest, inferr, multcomp
+)
+```
+
+# Read in the wide form of the data
+
+```{r}
+wide <- readRDS("~/W&C Simulation Dropbox/Nigel Bean/TSH_2019/data/20191207-01_cleaning-data.rds")
+
+```
+
+# TSH and FT4
+Count the number in the possible paired outcomes
+
+```{r}
+
+N <- table(wide$FT4_Sig, wide$TSH_Sig)
+N
+
+```
+
+Use the McNemar test 
+```{r}
+# Seems to be the right test given there are paired underlying results see https://rcompanion.org/rcompanion/b_07.html deprecated by infer_mcnemar_test
+infer_mcnemar_test(N)
+```
+
+# FT4 and T3/FT3
+Count the number in the possible paired outcomes
+```{r}
+
+N <- table(wide$FT4_Sig, wide$T3_Sig)
+N
+```
+Use the McNemar test 
+```{r}
+# Seems to be the right test given there are paired underlying results see https://rcompanion.org/rcompanion/b_07.html deprecated by infer_mcnemar_test
+infer_mcnemar_test(N)
+
+```
+
+# TSH and T3/FT3
+Count the number in the possible paired outcomes
+```{r}
+
+N <- table(wide$T3_Sig, wide$TSH_Sig)
+N
+```
+Use the McNemar test 
+```{r}
+# Seems to be the right test given there are paired underlying results see https://rcompanion.org/rcompanion/b_07.html deprecated by infer_mcnemar_test
+infer_mcnemar_test(N)
+```
+# Multicomparison testing
+
+```{r}
+TSH_long  <- read_rds("../data/20191207-02_convert_long.rds")
+TSH_long <- TSH_long %>% mutate(Sig=as.factor(Sig)) %>% mutate(Thyroid_test=as.factor(Thyroid_test)) 
+thyroid_model  <- glm(Sig ~ Thyroid_test, 
+             data = TSH_long, family = binomial)
+null_model  <- glm(Sig ~ 1, 
+             data = TSH_long, family = binomial)
+anova(null_model, thyroid_model, test = "LRT")
+
+summary(glht(thyroid_model, 
+             linfct = mcp(Thyroid_test = "Tukey")))
+```
+             
+             
+
+

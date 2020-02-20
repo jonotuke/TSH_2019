@@ -2,10 +2,12 @@
 title: "Modelling"
 author: "Jono Tuke"
 date: "Dec 2019"
-output: 
+output:
+  pdf_document:
+    toc: yes
   html_document:
-    theme: spacelab
     number_sections: yes
+    theme: spacelab
     toc: yes
     toc_float: yes
 ---
@@ -392,6 +394,7 @@ anova(null_model, thyroid_model, test = "LRT")
 ```{r}
 summary(glht(thyroid_model, 
              linfct = mcp(Thyroid_test = "Tukey")))
+
 ```
 
 ## Large size, small model
