@@ -1,0 +1,115 @@
+---
+title: "McNemar testing"
+author: "Nigel Bean and Jono Tuke"
+date: "Feb 2020"
+output: 
+  html_document:
+    theme: spacelab
+    number_sections: yes
+    toc_float: yes
+    toc: yes
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  fig.width = 6, 
+  fig.asp = 0.618, 
+  out.width = "70%",
+  fig.align = "center", 
+  root.dir = '../'
+)
+pacman::p_load(
+  tidyverse, lubridate, stringr, glue, lme4, lmerTest, inferr, multcomp
+)
+```
+
+# Read in data
+
+We will use the wide form of the data
+
+```{r}
+TSH_wide <- readRDS("../data/20191207-01_cleaning-data.rds")
+TSH_wide
+```
+
+# Analysis
+
+## Median number
+
+We are asked for the median number of subjects -  not quite sure what they want as we have multiple results for each paper, and also for each thyroid test. We will just grab the median for each thyroid test, this will have repeats of some cohorts. 
+
+
+```{r}
+TSH_wide %>% 
+  dplyr::select(Paper, FT4_N, TSH_N, T3_N) %>% 
+  pivot_longer(-Paper) %>% 
+  group_by(name) %>% 
+  summarise(median_N = median(value, na.rm = TRUE))
+```
+
+## McNemar analysis
+
+To perform this, we need contigency tables for each comparison, we will be looking at
+
+- TSH v FT4
+- TSH v T3, and 
+- FT4 v T3
+
+For each, we will use the base `mcnemar.test()`, and also the more tidyverse `infer_mcnemar_test()` from the `inferr` package - kudos to NB for being so tidyverse. 
+
+Reference from NB:
+
+<https://rcompanion.org/rcompanion/b_07.html>
+
+### TSH and FT4
+
+```{r}
+TSH_FT4_CT  <- table(TSH_wide$TSH_Sig,  TSH_wide$FT4_Sig)
+TSH_FT4_CT
+```
+
+```{r}
+infer_mcnemar_test(TSH_FT4_CT)
+```
+
+```{r}
+mcnemar.test(TSH_FT4_CT)
+```
+
+
+### TSH and T3
+
+```{r}
+TSH_T3_CT  <- table(TSH_wide$TSH_Sig,  TSH_wide$T3_Sig)
+TSH_T3_CT
+```
+
+```{r}
+infer_mcnemar_test(TSH_T3_CT)
+```
+
+```{r}
+mcnemar.test(TSH_T3_CT)
+```
+
+
+### FT4 and T3
+
+```{r}
+FT4_T3_CT  <- table(TSH_wide$FT4_Sig,  TSH_wide$T3_Sig)
+FT4_T3_CT
+```
+
+```{r}
+infer_mcnemar_test(FT4_T3_CT)
+```
+
+```{r}
+mcnemar.test(FT4_T3_CT)
+```
+
+    
+
+
